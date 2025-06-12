@@ -3,7 +3,7 @@
 
 
 **estrutura sugerida pro projeto:**
-
+```
 app/
 │
 ├── produto.py
@@ -73,3 +73,4 @@ app/
 └── main.py
     ├── inicializar_banco_dados()
     ├── carregar_interface_usuario()
+```
