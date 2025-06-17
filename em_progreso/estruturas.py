@@ -17,10 +17,10 @@ class Produto:
 
         if self.preco_por_peso is None:
             preco_total = self.preco * quantidade
-            return {"retorno": 0, "mensagem": "Preço calculado com sucesso.", "valor": preco_total}
+            return {"retorno": 0, "mensagem": "Preço calculado com sucesso.", "dados": preco_total}
         else:
-            preco_total = self.preco * quantidade / self.preco_por_peso
-            return {"retorno": 0, "mensagem": "Preço calculado com sucesso.", "valor": preco_total}
+            preco_total = self.preco_por_peso * quantidade
+            return {"retorno": 0, "mensagem": "Preço calculado com sucesso.", "dados": preco_total}
 
     def atualizar(self, atributo: str, valor):
         if not hasattr(self, atributo):
@@ -116,7 +116,7 @@ class Estoque:
         return {
             "retorno": 0,
             "mensagem": "Consulta realizada com sucesso.",
-            "valor":{
+            "dados":{
                     "estoque": self.estoque[codigo],
                     "exposicao": self.exposicao[codigo],
                     "capacidade_estoque": self.capacidades[codigo]["estoque"],
@@ -127,26 +127,26 @@ class Estoque:
 
 
 class Venda:
-    def __init__(self, id: int, data_hora: str, itens:list[tuple]=[]):
+    def __init__(self, id: int, data_hora: str, itens:list[tuple[Produto, float]]):
         self.id = id
         self.data_hora = data_hora
         self.itens = itens  # lista de tuplas de (produto, quantidade)
 
 class Funcionario:
-    def __init__(self, nome, codigo, cargo, local_de_trabalho, data_contratacao, data_desligamento=None):
+    def __init__(self, nome, codigo, cargo, data_contratacao, data_desligamento=None):
         self.nome = nome
         self.codigo = codigo
-        self.cargo = cargo 
-        self.local_de_trabalho = local_de_trabalho
+        self.cargo = cargo
         self.data_contratacao = data_contratacao
         self.data_desligamento = data_desligamento
 
 
 class Localidade:
-    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple, funcionarios: list, vendas:list=[]) -> None:
+    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list, vendas:list) -> None:
         self.nome = nome
         self.codigo = codigo
         self.estoque = estoque
         self.localizacao = localizacao
         self.funcionarios = funcionarios
         self.vendas = vendas
+        self.ativo = True
