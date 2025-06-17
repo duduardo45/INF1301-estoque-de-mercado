@@ -142,7 +142,7 @@ class Funcionario:
 
 
 class Localidade:
-    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list, vendas:list) -> None:
+    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list[Funcionario], vendas:list[Venda]) -> None:
         self.nome = nome
         self.codigo = codigo
         self.estoque = estoque
