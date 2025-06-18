@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from estruturas import Localidade, Funcionario, Estoque, Venda
+from estruturas import Localidade, Funcionario, Estoque, Carrinho
 
 
 __all__ = [
@@ -12,7 +12,7 @@ __all__ = [
 
 _unidades = {}
 
-def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoque=None, funcionarios:list[Funcionario]=None, vendas: list[Venda]=None):
+def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoque:Estoque=None, funcionarios:list[Funcionario]=None, vendas: list[Carrinho]=None):
     """
     Cadastra uma nova unidade no sistema.
 
@@ -77,7 +77,6 @@ def remove_Unidade(codigo: int):
 
     Args:
         codigo (int): O código da unidade a ser removida.
-        permissao (str): Categoria do usuário
 
     Returns:
         0 -> codigo existente → marca como removida  
@@ -133,7 +132,7 @@ def consulta_Unidade(codigo:int):
     unidade = _unidades.get(codigo)
 
     if not unidade:
-        return {'retorno': 2, 'dados': None, 'mensagem': 'Unidade não encontrada'}
+        return {'retorno': 2, 'mensagem': 'Unidade não encontrada', 'dados': None}
     
     if not unidade.ativo:
         return {'retorno': 1, 'mensagem': 'Unidade desativada', 'dados': unidade}
@@ -211,6 +210,7 @@ def relatorio_Unidade(codigo:int, periodo:tuple[str,str], incluir_inativas:bool=
         return {'retorno': 3, 'mensagem': 'Período inválido'}
 
     vendas_no_periodo = []
+    renda_no_periodo = 0
     for venda in unidade_obj.vendas:
         data_venda = datetime.strptime(venda.data_hora, "%Y/%m/%d").date()
         if data_inicio <= data_venda <= data_fim:
@@ -219,6 +219,10 @@ def relatorio_Unidade(codigo:int, periodo:tuple[str,str], incluir_inativas:bool=
                 'data': venda.data_hora,
                 'itens': [(item[0].nome, item[1]) for item in venda.itens]
             })
+        if hasattr(venda, 'total', False):
+            renda_no_periodo += venda.total
+        else:
+            renda_no_periodo += venda.calcula_total()
 
     movimentacoes_funcionarios = []
     for func in unidade_obj.funcionarios:

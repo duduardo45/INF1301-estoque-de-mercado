@@ -29,6 +29,24 @@ class Produto:
         setattr(self, atributo, valor)
         return {"retorno": 0, "mensagem": f"Atributo '{atributo}' atualizado com sucesso."}
 
+class Carrinho:
+    def __init__(self, id: int, data_hora: str, itens:list[tuple[Produto, float]]):
+        self.id = id
+        self.data_hora = data_hora
+        self.itens = itens  # lista de tuplas de (produto, quantidade)
+
+    def adiciona_no_carrinho(self, item:tuple[Produto, float]):
+        self.itens.append(item)
+
+    def calcula_total(self):
+        total = 0
+        for item in self.itens:
+            produto = item[0]
+            quantidade = item[1]
+            preco = produto.calcula_preco(quantidade)
+            total += preco
+        self.total = total
+        return total
 
 class Estoque:
     def __init__(self):
@@ -98,15 +116,17 @@ class Estoque:
         self.exposicao[codigo] += quantidade
         return {"retorno": 0, "mensagem": "Produto movido para a exposição."}
 
-    def retirar_venda(self, produto, quantidade):
-        codigo = produto.codigo
-        if codigo not in self.capacidades:
-            return {"retorno": 1, "mensagem": "Produto não cadastrado."}
-        if self.exposicao[codigo] < quantidade:
-            return {"retorno": 2, "mensagem": "Quantidade insuficiente na exposição para venda."}
+    def retirar_venda(self, venda:Carrinho):
+        for item in venda.itens:
+            codigo = item[0].codigo
+            quantidade = item[1]
+            if codigo not in self.capacidades:
+                return {"retorno": 1, "mensagem": "Produto não cadastrado."}
+            if self.exposicao[codigo] < quantidade:
+                return {"retorno": 2, "mensagem": "Quantidade insuficiente na exposição para venda."}
 
-        self.exposicao[codigo] -= quantidade
-        return {"retorno": 0, "mensagem": "Venda registrada com sucesso."}
+            self.exposicao[codigo] -= quantidade
+        return {"retorno": 0, "mensagem": "Produtos removidos com sucesso."}
 
     def consultar_quantidade(self, produto):
         codigo = produto.codigo
@@ -124,14 +144,6 @@ class Estoque:
                 }
         }
 
-
-
-class Venda:
-    def __init__(self, id: int, data_hora: str, itens:list[tuple[Produto, float]]):
-        self.id = id
-        self.data_hora = data_hora
-        self.itens = itens  # lista de tuplas de (produto, quantidade)
-
 class Funcionario:
     def __init__(self, nome, codigo, cargo, data_contratacao, data_desligamento=None):
         self.nome = nome
@@ -140,13 +152,27 @@ class Funcionario:
         self.data_contratacao = data_contratacao
         self.data_desligamento = data_desligamento
 
+    def atualizar(self, atributo:str, valor):
+        if not hasattr(self, atributo):
+            return {"retorno": 1, "mensagem": f"Atributo '{atributo}' não encontrado no produto."}
+
+        setattr(self, atributo, valor)
+        return {"retorno": 0, "mensagem": f"Atributo '{atributo}' atualizado com sucesso."}
+
 
 class Localidade:
-    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list[Funcionario], vendas:list[Venda]) -> None:
+    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list[Funcionario], vendas:list[Carrinho], ativo:bool=True):
         self.nome = nome
         self.codigo = codigo
         self.estoque = estoque
         self.localizacao = localizacao
         self.funcionarios = funcionarios
         self.vendas = vendas
-        self.ativo = True
+        self.ativo = ativo
+
+    def atualizar(self, atributo:str, valor):
+        if not hasattr(self, atributo):
+            return {"retorno": 1, "mensagem": f"Atributo '{atributo}' não encontrado no produto."}
+
+        setattr(self, atributo, valor)
+        return {"retorno": 0, "mensagem": f"Atributo '{atributo}' atualizado com sucesso."}
