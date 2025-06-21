@@ -1,4 +1,4 @@
-from estruturas import Carrinho
+
 
 
 __all__ = [
@@ -302,21 +302,20 @@ class Estoque:
 
 
 
-    def retirar_venda(self, venda: Carrinho):
+    def retirar_venda(self, venda: dict):
         """
         Remove os produtos vendidos da exposição conforme os itens da venda.
 
         Args:
-            venda (Carrinho): objeto que contém os itens vendidos (lista de tuplas Produto, quantidade)
+            venda (dict): dicionário que contém os itens vendidos (vindo da chave itens do objeto Carrinho)
 
         Returns:
             0 -> produtos removidos com sucesso
             1 -> produto não cadastrado
             2 -> quantidade insuficiente na exposição
         """
-        for item in venda.itens:
-            codigo = item[0].codigo
-            quantidade = item[1]
+        for item, quantidade in venda.items():
+            codigo = item.codigo # código do Produto
             if codigo not in self.capacidades:
                 return {"retorno": 1, "mensagem": "Produto não cadastrado."}
             if self.exposicao[codigo] < quantidade:

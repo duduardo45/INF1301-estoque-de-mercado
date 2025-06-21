@@ -46,7 +46,7 @@ class Produto:
         self.preco = preco
         self.preco_por_peso = preco_por_peso
 
-    def __str__(self):
+    def __str__(self, quantidade:float=None):
         """
         Retorna uma representação em string amigável do objeto Produto.
 
@@ -58,14 +58,19 @@ class Produto:
             f"Marca: {self.marca}",
             f"Categoria: {self.categoria}",
             f"Código: {self.codigo}",
-            f"Peso: {self.peso}",
         ]
 
-        if self.preco_por_peso is not None:
-            partes.append(f"Preço por peso: R$ {self.preco_por_peso:.2f}")
-        else:
-            partes.append(f"Preço unitário: R$ {self.preco:.2f}")
+        if quantidade is None:
 
+            partes.append(f"Peso: {self.peso}")
+            if self.preco_por_peso is not None:
+                partes.append(f"Preço por peso: R$ {self.preco_por_peso:.2f}")
+            else:
+                partes.append(f"Preço unitário: R$ {self.preco:.2f}")
+        else:
+            partes.append(f"Quantidade: {quantidade}")
+
+            partes.append(f"Subtotal: {self.calcula_preco(quantidade)}")
         return " | ".join(partes)
 
     def calcula_preco(self, quantidade):

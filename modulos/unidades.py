@@ -279,15 +279,21 @@ def relatorio_Unidade(codigo:int, periodo:tuple[str,str], incluir_inativas:bool=
 
         data_venda = datetime.strptime(venda.data_hora, "%Y/%m/%d").date()
         if data_inicio <= data_venda <= data_fim:
+            
+            if venda.total is not None:
+                total = venda.total
+            else:
+                total = venda.calcula_total()
+
             vendas_no_periodo.append({
                 'id_venda': venda.id,
                 'data': venda.data_hora,
-                'itens': [(item[0].nome, item[1]) for item in venda.itens]
+                'itens': [(item.nome, qtd) for item, qtd in venda.itens.items()],
+                'total': total
             })
-        if hasattr(venda, 'total', False):
-            renda_no_periodo += venda.total
-        else:
-            renda_no_periodo += venda.calcula_total()
+
+            renda_no_periodo += total
+            
 
     movimentacoes_funcionarios = []
     for func in unidade_obj.funcionarios:
