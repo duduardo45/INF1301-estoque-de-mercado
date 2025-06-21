@@ -1,7 +1,3 @@
-
-
-
-
 __all__ = [
     "Estoque",
     "registrar_estoque",
@@ -57,16 +53,49 @@ class Estoque:
 
     def registrar_produto(self, produto, capacidade_estoque, capacidade_exposicao):
         """
-        Registra um novo produto no estoque com suas capacidades.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: registrar_produto() (Método de Estoque)
 
-        Args:
-            produto (Produto): objeto Produto a ser registrado
-            capacidade_estoque (int): capacidade máxima no estoque interno
-            capacidade_exposicao (int): capacidade máxima na exposição
+        B) OBJETIVO:
+        Registrar um novo produto dentro da instância do estoque, definindo suas capacidades máximas de armazenamento interno e de exposição.
 
-        Returns:
-            0 -> produto registrado com sucesso
-            1 -> produto já está registrado
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: produto (Produto)
+        O objeto do produto a ser registrado.
+        PARÂMETRO 2: capacidade_estoque (inteiro)
+        Capacidade máxima de unidades do produto no estoque interno.
+        PARÂMETRO 3: capacidade_exposicao (inteiro)
+        Capacidade máxima de unidades do produto na área de exposição.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO JÁ ESTIVER REGISTRADO:
+        {"retorno": 1, "mensagem": "Produto já está registrado."}
+
+        RETORNO 2: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Produto registrado com sucesso."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `produto` é um objeto com um atributo `codigo`.
+        - `capacidade_estoque` e `capacidade_exposicao` são números inteiros.
+        - O código do produto não deve existir previamente no dicionário `self.capacidades`.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+        - Se bem-sucedido, o produto é adicionado aos dicionários `estoque`, `exposicao` e `capacidades` da instância, com quantidades iniciais zeradas.
+
+        E) DESCRIÇÃO:
+        1. Extrai o código do objeto `produto`.
+        2. Verifica se o código já existe nas `capacidades` do estoque. Se sim, retorna erro.
+        3. Inicializa a quantidade do produto como 0 nos dicionários `estoque` e `exposicao`.
+        4. Armazena as capacidades de estoque e exposição no dicionário `capacidades`.
+        5. Retorna uma mensagem de sucesso.
+
+        F) HIPÓTESES:
+        - O objeto `produto` possui um atributo `.codigo` que é uma string.
+        - A instância da classe `Estoque` possui os dicionários `estoque`, `exposicao` e `capacidades`.
+
+        G) RESTRIÇÕES:
+        - A função modifica o estado interno do objeto `Estoque`.
         """
         codigo = produto.codigo
         if codigo in self.capacidades:
@@ -79,21 +108,50 @@ class Estoque:
             "exposicao": capacidade_exposicao
         }
         return {"retorno": 0, "mensagem": "Produto registrado com sucesso."}
-    
+
 
 
     def remover_produto(self, codigo):
         """
-        Remove completamente um produto do estoque, da exposição e das capacidades
-        apenas se não houver quantidades associadas.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: remover_produto() (Método de Estoque)
 
-        Args:
-            codigo (str): código do produto a ser removido
+        B) OBJETIVO:
+        Remover completamente um produto dos registros do estoque, contanto que não haja mais unidades físicas (no estoque interno ou em exposição).
 
-        Retorna:
-            0 -> produto removido com sucesso
-            1 -> produto não encontrado
-            2 -> produto ainda possui quantidades em estoque ou exposição
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: codigo (string)
+        Código do produto a ser removido.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO NÃO FOR ENCONTRADO:
+        {"retorno": 1, "mensagem": "Produto não encontrado."}
+
+        RETORNO 2: DICIONÁRIO SE AINDA HOUVER QUANTIDADES DO PRODUTO:
+        {"retorno": 2, "mensagem": "Produto ainda possui quantidades em estoque ou exposição."}
+
+        RETORNO 3: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Produto removido com sucesso."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `codigo` é uma string que corresponde a um produto registrado.
+        - A quantidade do produto correspondente deve ser 0 tanto no estoque interno quanto na exposição.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+        - Se bem-sucedido, todas as entradas referentes ao `codigo` são removidas dos dicionários internos (`estoque`, `exposicao`, `capacidades`).
+
+        E) DESCRIÇÃO:
+        1. Verifica se o `codigo` do produto está registrado nas `capacidades`. Se não estiver, retorna erro.
+        2. Verifica se a quantidade em `estoque` ou `exposicao` para o produto é maior que zero. Se for, retorna erro.
+        3. Se as quantidades estiverem zeradas, remove o produto de cada um dos três dicionários de controle.
+        4. Retorna uma mensagem de sucesso.
+
+        F) HIPÓTESES:
+        - A estrutura de dados do estoque está consistente.
+
+        G) RESTRIÇÕES:
+        - A remoção é bloqueada para evitar a perda de registros de produtos que ainda existem fisicamente.
         """
         if codigo not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não encontrado."}
@@ -111,14 +169,41 @@ class Estoque:
 
     def listar_em_falta(self, tipo='ambos'):
         """
-        Lista os produtos com quantidade 0 no estoque, exposição ou ambos.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: listar_em_falta() (Método de Estoque)
 
-        Args:
-            tipo (str): 'estoque', 'exposicao' ou 'ambos'
+        B) OBJETIVO:
+        Gerar uma lista de códigos de produtos que estão com quantidade zerada, seja no estoque interno, na exposição ou em qualquer um dos dois.
 
-        Retorna:
-            0 -> listagem realizada com sucesso
-            2 -> tipo inválido
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: tipo (string, opcional)
+        Define o escopo da busca: 'estoque', 'exposicao' ou 'ambos' (padrão).
+
+        RETORNO 1: DICIONÁRIO DE ERRO POR TIPO INVÁLIDO:
+        {"retorno": 2, "mensagem": "Tipo inválido. Use 'estoque', 'exposicao' ou 'ambos'."}
+
+        RETORNO 2: DICIONÁRIO DE SUCESSO COM A LISTA:
+        {"retorno": 0, "mensagem": "Listagem de faltas realizada com sucesso.", "dados": [<lista de codigos>]}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `tipo` é uma das três strings permitidas: 'estoque', 'exposicao', 'ambos'.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário contendo o status e, na chave 'dados', uma lista de strings com os códigos dos produtos em falta.
+
+        E) DESCRIÇÃO:
+        1. Valida se o parâmetro `tipo` é um dos valores permitidos.
+        2. Itera por todos os produtos registrados (`self.capacidades`).
+        3. Para cada produto, verifica se sua quantidade é zero no local especificado pelo `tipo`.
+        4. Adiciona o código do produto à lista de resultados se a condição for atendida.
+        5. Retorna a lista de produtos em falta dentro de um dicionário de sucesso.
+
+        F) HIPÓTESES:
+        - Para cada produto em `capacidades`, existe uma entrada correspondente em `estoque` e `exposicao`.
+
+        G) RESTRIÇÕES:
+        - A função não diferencia produtos que nunca tiveram entrada daqueles que tiveram e acabaram.
         """
         faltando = []
 
@@ -141,19 +226,46 @@ class Estoque:
             "mensagem": "Listagem de faltas realizada com sucesso.",
             "dados": faltando
         }
-    
+
 
 
     def percentual_ocupado(self, codigo):
         """
-        Calcula a ocupação percentual de estoque e exposição de um produto.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: percentual_ocupado() (Método de Estoque)
 
-        Args:
-            codigo (str): código do produto
+        B) OBJETIVO:
+        Calcular e retornar os percentuais de ocupação de um produto, tanto no estoque interno quanto na exposição, em relação às suas capacidades máximas.
 
-        Retorna:
-            0 -> cálculo realizado com sucesso
-            1 -> produto não cadastrado
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: codigo (string)
+        Código do produto a ser verificado.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO NÃO ESTIVER CADASTRADO:
+        {"retorno": 1, "mensagem": "Produto não cadastrado."}
+
+        RETORNO 2: DICIONÁRIO DE SUCESSO COM OS PERCENTUAIS:
+        {"retorno": 0, "mensagem": "Percentuais calculados com sucesso.", "dados": {"estoque": <float>, "exposicao": <float>}}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `codigo` é uma string que corresponde a um produto registrado no estoque.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário contendo o status e, na chave 'dados', um outro dicionário com os percentuais de ocupação.
+
+        E) DESCRIÇÃO:
+        1. Verifica se o `codigo` do produto está registrado nas `capacidades`. Se não, retorna erro.
+        2. Obtém as capacidades de estoque e exposição para o produto.
+        3. Calcula o percentual de ocupação para o estoque interno (quantidade / capacidade).
+        4. Calcula o percentual de ocupação para a exposição.
+        5. Retorna um dicionário de sucesso contendo os dois percentuais arredondados.
+
+        F) HIPÓTESES:
+        - As capacidades armazenadas são maiores que zero para evitar divisão por zero (a função trata o caso de capacidade ser 0).
+
+        G) RESTRIÇÕES:
+        - Nenhuma.
         """
         if codigo not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado."}
@@ -175,13 +287,37 @@ class Estoque:
 
     def listar_produtos(self, detalhado=False):
         """
-        Lista os produtos registrados no estoque.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: listar_produtos() (Método de Estoque)
 
-        Args:
-            detalhado (bool): se True, inclui quantidades e capacidades
+        B) OBJETIVO:
+        Fornecer uma lista de todos os produtos registrados neste estoque, de forma simples (só códigos) ou detalhada (com quantidades e capacidades).
 
-        Retorna:
-            0 -> listagem realizada com sucesso
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: detalhado (booleano, opcional)
+        Se `True`, retorna uma lista de dicionários com todos os detalhes. Se `False` (padrão), retorna uma lista de strings com os códigos.
+
+        RETORNO 1: DICIONÁRIO DE SUCESSO COM A LISTA DE PRODUTOS:
+        {"retorno": 0, "mensagem": "Listagem realizada com sucesso.", "dados": [<lista>]}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `detalhado` é um valor booleano.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário contendo, na chave 'dados', uma lista de strings ou uma lista de dicionários, dependendo do parâmetro `detalhado`.
+
+        E) DESCRIÇÃO:
+        1. Itera sobre todos os códigos de produtos registrados em `self.capacidades`.
+        2. Se `detalhado` for `True`, monta um dicionário com todos os dados do produto (código, quantidades, capacidades) e o adiciona à lista de resultados.
+        3. Se `detalhado` for `False`, adiciona apenas o código do produto à lista de resultados.
+        4. Retorna um dicionário de sucesso com a lista montada.
+
+        F) HIPÓTESES:
+        - A estrutura de dados do estoque está consistente.
+
+        G) RESTRIÇÕES:
+        - Nenhuma.
         """
         produtos = []
         for codigo in self.capacidades:
@@ -206,21 +342,54 @@ class Estoque:
 
     def atualizar_capacidades(self, codigo, capacidade_estoque=None, capacidade_exposicao=None):
         """
-        Atualiza as capacidades máximas de estoque e exposição para um produto.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: atualizar_capacidades() (Método de Estoque)
 
-        Args:
-            codigo (str): código do produto a atualizar
-            capacidade_estoque (int, opcional): nova capacidade do estoque interno
-            capacidade_exposicao (int, opcional): nova capacidade da exposição
+        B) OBJETIVO:
+        Modificar a capacidade máxima de armazenamento (interno e/ou exposição) para um produto já registrado.
 
-        Returns:
-            0 -> capacidades atualizadas com sucesso
-            1 -> produto não cadastrado no estoque
-            2 -> nenhuma capacidade foi especificada
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: codigo (string)
+        Código do produto a ter suas capacidades atualizadas.
+        PARÂMETRO 2: capacidade_estoque (inteiro, opcional)
+        Novo valor para a capacidade do estoque interno.
+        PARÂMETRO 3: capacidade_exposicao (inteiro, opcional)
+        Novo valor para a capacidade da exposição.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO NÃO ESTIVER CADASTRADO:
+        {"retorno": 1, "mensagem": "Produto não cadastrado no estoque."}
+
+        RETORNO 2: DICIONÁRIO SE NENHUMA CAPACIDADE FOR FORNECIDA:
+        {"retorno": 2, "mensagem": "Por favor especifique alguma capacidade a atualizar."}
+
+        RETORNO 3: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Capacidades atualizadas com sucesso."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `codigo` corresponde a um produto existente.
+        - Pelo menos um dos parâmetros `capacidade_estoque` ou `capacidade_exposicao` deve ser fornecido.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+        - Se bem-sucedido, os valores de capacidade no dicionário `self.capacidades` são atualizados.
+
+        E) DESCRIÇÃO:
+        1. Verifica se o `codigo` existe no registro de `capacidades`. Se não, retorna erro.
+        2. Verifica se ambos os parâmetros de capacidade são nulos. Se sim, retorna erro.
+        3. Se `capacidade_estoque` foi fornecida, atualiza o valor correspondente.
+        4. Se `capacidade_exposicao` foi fornecida, atualiza o valor correspondente.
+        5. Retorna uma mensagem de sucesso.
+
+        F) HIPÓTESES:
+        - Nenhuma.
+
+        G) RESTRIÇÕES:
+        - A função permite que a nova capacidade seja menor que a quantidade atual de produtos, o que pode criar uma inconsistência a ser tratada por outra função (`verificar_consistencia`).
         """
         if codigo not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado no estoque."}
-        
+
         if capacidade_estoque is None and capacidade_exposicao is None:
             return {"retorno": 2, "mensagem": "Por favor especifique alguma capacidade a atualizar."}
 
@@ -236,19 +405,61 @@ class Estoque:
 
     def adicionar_produto(self, produto, quantidade, destino='estoque'):
         """
-        Adiciona uma quantidade de produto no estoque ou exposição.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: adicionar_produto() (Método de Estoque)
 
-        Args:
-            produto (Produto): objeto Produto a adicionar
-            quantidade (int): quantidade a adicionar
-            destino (str): 'estoque' ou 'exposicao' indicando onde adicionar
+        B) OBJETIVO:
+        Aumentar a quantidade de um produto, seja no estoque interno ou na exposição, respeitando os limites de capacidade.
 
-        Returns:
-            0 -> produto adicionado com sucesso
-            1 -> produto não cadastrado
-            2 -> capacidade de estoque excedida
-            3 -> capacidade de exposição excedida
-            4 -> destino inválido
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: produto (Produto)
+        O objeto do produto a ser adicionado.
+        PARÂMETRO 2: quantidade (inteiro)
+        Número de unidades a serem adicionadas.
+        PARÂMETRO 3: destino (string, opcional)
+        Local onde adicionar: 'estoque' (padrão) ou 'exposicao'.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO NÃO ESTIVER CADASTRADO:
+        {"retorno": 1, "mensagem": "Produto não cadastrado."}
+
+        RETORNO 2: DICIONÁRIO SE A CAPACIDADE DO ESTOQUE FOR EXCEDIDA:
+        {"retorno": 2, "mensagem": "Capacidade de estoque excedida para o produto."}
+
+        RETORNO 3: DICIONÁRIO SE A CAPACIDADE DA EXPOSIÇÃO FOR EXCEDIDA:
+        {"retorno": 3, "mensagem": "Capacidade de exposição excedida para o produto."}
+
+        RETORNO 4: DICIONÁRIO SE O DESTINO FOR INVÁLIDO:
+        {"retorno": 4, "mensagem": "Destino inválido. Use 'estoque' ou 'exposicao'."}
+
+        RETORNO 5: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Produto adicionado ao estoque interno."} ou {"retorno": 0, "mensagem": "Produto adicionado à exposição."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `produto` está registrado no estoque.
+        - `quantidade` é um inteiro positivo.
+        - `destino` é 'estoque' ou 'exposicao'.
+        - A soma da quantidade atual com a nova quantidade não excede a capacidade do destino.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+        - Se bem-sucedido, a quantidade no dicionário do `destino` é incrementada.
+
+        E) DESCRIÇÃO:
+        1. Extrai o código do objeto `produto` e verifica se ele está registrado.
+        2. Se o `destino` for 'estoque':
+           a. Verifica se a adição da `quantidade` excede a capacidade do estoque. Se sim, retorna erro.
+           b. Incrementa a quantidade em `self.estoque` e retorna sucesso.
+        3. Se o `destino` for 'exposicao':
+           a. Verifica se a adição da `quantidade` excede a capacidade da exposição. Se sim, retorna erro.
+           b. Incrementa a quantidade em `self.exposicao` e retorna sucesso.
+        4. Se o `destino` for inválido, retorna erro.
+
+        F) HIPÓTESES:
+        - Nenhuma.
+
+        G) RESTRIÇÕES:
+        - A função não permite adicionar produtos além da capacidade definida.
         """
         codigo = produto.codigo
         if codigo not in self.capacidades:
@@ -277,17 +488,52 @@ class Estoque:
 
     def mover_para_exposicao(self, produto, quantidade):
         """
-        Move uma quantidade do produto do estoque interno para a exposição.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: mover_para_exposicao() (Método de Estoque)
 
-        Args:
-            produto (Produto): objeto Produto a mover
-            quantidade (int): quantidade a mover
+        B) OBJETIVO:
+        Transferir uma quantidade de um produto do estoque interno para a área de exposição.
 
-        Returns:
-            0 -> produto movido com sucesso
-            1 -> produto não cadastrado
-            2 -> estoque insuficiente para movimentação
-            3 -> capacidade de exposição excedida
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: produto (Produto)
+        O objeto do produto a ser movimentado.
+        PARÂmetro 2: quantidade (inteiro)
+        Número de unidades a serem movidas.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO NÃO ESTIVER CADASTRADO:
+        {"retorno": 1, "mensagem": "Produto não cadastrado."}
+
+        RETORNO 2: DICIONÁRIO SE O ESTOQUE INTERNO FOR INSUFICIENTE:
+        {"retorno": 2, "mensagem": "Estoque insuficiente para movimentação."}
+
+        RETORNO 3: DICIONÁRIO SE A CAPACIDADE DA EXPOSIÇÃO FOR EXCEDIDA:
+        {"retorno": 3, "mensagem": "Capacidade de exposição excedida para o produto."}
+
+        RETORNO 4: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Produto movido para a exposição."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `produto` está registrado.
+        - A `quantidade` a ser movida é menor ou igual à quantidade no estoque interno.
+        - A `quantidade` a ser movida, somada à quantidade já em exposição, não excede a capacidade da exposição.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+        - Se bem-sucedido, a `quantidade` é subtraída do estoque interno e somada à exposição.
+
+        E) DESCRIÇÃO:
+        1. Verifica se o produto está registrado.
+        2. Verifica se há quantidade suficiente no estoque interno para a transferência.
+        3. Verifica se a área de exposição tem capacidade para receber a nova quantidade.
+        4. Se todas as verificações passarem, decrementa a quantidade do `estoque` e incrementa na `exposicao`.
+        5. Retorna sucesso.
+
+        F) HIPÓTESES:
+        - Nenhuma.
+
+        G) RESTRIÇÕES:
+        - Nenhuma.
         """
         codigo = produto.codigo
         if codigo not in self.capacidades:
@@ -305,15 +551,49 @@ class Estoque:
 
     def retirar_venda(self, venda: dict):
         """
-        Remove os produtos vendidos da exposição conforme os itens da venda.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: retirar_venda() (Método de Estoque)
 
-        Args:
-            venda (dict): dicionário que contém os itens vendidos (vindo da chave itens do objeto Carrinho)
+        B) OBJETIVO:
+        Dar baixa na quantidade de produtos em exposição que foram vendidos.
 
-        Returns:
-            0 -> produtos removidos com sucesso
-            1 -> produto não cadastrado
-            2 -> quantidade insuficiente na exposição
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: venda (dicionário)
+        Um dicionário representando os itens vendidos, onde as chaves são objetos `Produto` e os valores são as quantidades.
+
+        RETORNO 1: DICIONÁRIO SE UM PRODUTO DA VENDA NÃO ESTIVER CADASTRADO:
+        {"retorno": 1, "mensagem": "Produto não cadastrado."}
+
+        RETORNO 2: DICIONÁRIO SE A QUANTIDADE EM EXPOSIÇÃO FOR INSUFICIENTE:
+        {"retorno": 2, "mensagem": "Quantidade insuficiente na exposição para venda."}
+
+        RETORNO 3: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Produtos removidos com sucesso."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `venda` é um dicionário no formato {Produto: quantidade}.
+        - Todos os produtos na venda existem no estoque.
+        - Para cada produto, a quantidade vendida é menor ou igual à quantidade em exposição.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+        - Se bem-sucedido, a quantidade de cada produto vendido é subtraída da `exposicao`.
+
+        E) DESCRIÇÃO:
+        1. Itera sobre os itens e quantidades no dicionário `venda`.
+        2. Para cada item, extrai o código do produto.
+        3. Verifica se o produto está registrado no estoque.
+        4. Verifica se a quantidade em exposição é suficiente para cobrir a venda.
+        5. Se qualquer verificação falhar, a função retorna um erro imediatamente e não altera o estado do estoque.
+        6. Se todos os itens forem válidos, a função então subtrai a quantidade vendida da `exposicao` para cada item.
+        7. Retorna sucesso.
+
+        F) HIPÓTESES:
+        - A função é chamada após a validação da venda, mas faz sua própria verificação de consistência.
+
+        G) RESTRIÇÕES:
+        - A operação não é atômica no sentido de que, se um item falhar no meio do loop (o que não ocorre no código atual), os anteriores não seriam revertidos. O código atual retorna no primeiro erro, evitando este problema.
         """
         for item, quantidade in venda.items():
             codigo = item.codigo # código do Produto
@@ -329,14 +609,38 @@ class Estoque:
 
     def produto_existe(self, codigo):
         """
-        Verifica se o produto com o código fornecido está registrado.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: produto_existe() (Método de Estoque)
 
-        Args:
-            codigo (str): código do produto
+        B) OBJETIVO:
+        Verificar de forma simples e direta se um produto está registrado neste estoque.
 
-        Retorna:
-            0 -> produto existe
-            1 -> produto não encontrado
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: codigo (string)
+        Código do produto a ser verificado.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO EXISTE:
+        {"retorno": 0, "mensagem": "Produto registrado."}
+
+        RETORNO 2: DICIONÁRIO SE O PRODUTO NÃO EXISTE:
+        {"retorno": 1, "mensagem": "Produto não encontrado."}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `codigo` é uma string.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status.
+
+        E) DESCRIÇÃO:
+        1. Verifica se o `codigo` existe como chave no dicionário `self.capacidades`.
+        2. Retorna o dicionário correspondente ao resultado.
+
+        F) HIPÓTESES:
+        - `self.capacidades` é a fonte da verdade para o registro de produtos.
+
+        G) RESTRIÇÕES:
+        - Nenhuma.
         """
         if codigo in self.capacidades:
             return {"retorno": 0, "mensagem": "Produto registrado."}
@@ -346,14 +650,40 @@ class Estoque:
 
     def consultar_quantidade(self, produto):
         """
-        Consulta as quantidades e capacidades do produto no estoque.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: consultar_quantidade() (Método de Estoque)
 
-        Args:
-            produto (Produto): produto a ser consultado
+        B) OBJETIVO:
+        Retornar um relatório completo das quantidades e capacidades de um único produto.
 
-        Returns:
-            0 -> consulta realizada com sucesso
-            1 -> produto não cadastrado
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: produto (Produto)
+        O objeto do produto a ser consultado.
+
+        RETORNO 1: DICIONÁRIO SE O PRODUTO NÃO ESTIVER CADASTRADO:
+        {"retorno": 1, "mensagem": "Produto não cadastrado."}
+
+        RETORNO 2: DICIONÁRIO DE SUCESSO COM OS DADOS:
+        {"retorno": 0, "mensagem": "Consulta realizada com sucesso.", "dados": {...}}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `produto` é um objeto que possui o atributo `codigo` correspondente a um produto registrado.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status contendo os dados detalhados do produto na chave 'dados'.
+
+        E) DESCRIÇÃO:
+        1. Extrai o código do objeto `produto`.
+        2. Verifica se o produto está registrado. Se não, retorna erro.
+        3. Monta um dicionário com as quantidades atuais de estoque e exposição, e as capacidades máximas.
+        4. Retorna um dicionário de sucesso com os dados coletados.
+
+        F) HIPÓTESES:
+        - A estrutura de dados do estoque está consistente.
+
+        G) RESTRIÇÕES:
+        - Nenhuma.
         """
         codigo = produto.codigo
         if codigo not in self.capacidades:
@@ -369,19 +699,47 @@ class Estoque:
                 "capacidade_exposicao": self.capacidades[codigo]["exposicao"]
             }
         }
-    
+
 
 
     def verificar_consistencia(self):
         """
-        Verifica se:
-        - Todos os produtos em capacidades têm entrada correspondente em estoque e exposição;
-        - Nenhum produto possui quantidade maior que a capacidade permitida;
-        - Nenhum produto existe em estoque ou exposição sem estar registrado em capacidades.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: verificar_consistencia() (Método de Estoque)
 
-        Retorna:
-            0 -> estrutura consistente
-            1 -> inconsistências encontradas (detalhadas por produto)
+        B) OBJETIVO:
+        Realizar uma auditoria interna na estrutura de dados do estoque para encontrar inconsistências, como excesso de capacidade ou produtos não registrados.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: DICIONÁRIO SE A ESTRUTURA ESTIVER CONSISTENTE:
+        {"retorno": 0, "mensagem": "Estrutura consistente."}
+
+        RETORNO 2: DICIONÁRIO SE FOREM ENCONTRADAS INCONSISTÊNCIAS:
+        {"retorno": 1, "mensagem": "Inconsistências encontradas.", "dados": [<lista de problemas>]}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - Nenhuma.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário de status que, em caso de erro, contém uma lista detalhada das inconsistências encontradas.
+
+        E) DESCRIÇÃO:
+        1. Itera por todos os produtos registrados em `capacidades` e verifica se:
+           a. Eles também existem em `estoque` e `exposicao`.
+           b. Suas quantidades atuais não excedem suas capacidades definidas.
+        2. Itera por todos os produtos em `estoque` e `exposicao` e verifica se todos eles estão registrados em `capacidades`.
+        3. Coleta todas as inconsistências encontradas em uma lista.
+        4. Se a lista de inconsistências estiver vazia, retorna sucesso.
+        5. Se houver inconsistências, retorna um dicionário de erro com a lista detalhada.
+
+        F) HIPÓTESES:
+        - Nenhuma.
+
+        G) RESTRIÇÕES:
+        - A função apenas relata problemas, ela não os corrige.
         """
         inconsistencias = []
 
@@ -438,16 +796,51 @@ _todos_estoques = {}
 
 def registrar_estoque(codigo: str):
     """
-    Cria e registra um novo objeto Estoque no sistema com o código especificado.
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: registrar_estoque()
 
-    Args:
-        codigo (str): identificador único do estoque
+    B) OBJETIVO:
+    Criar uma nova instância de `Estoque` e registrá-la no dicionário global de estoques do sistema, garantindo a unicidade do seu código.
 
-    Returns:
-        0 -> estoque registrado com sucesso
-        1 -> estoque já registrado com este código
-        2 -> parâmetro 'codigo' incorreto
-        3 -> parâmetro nulo
+    C) ACOPLAMENTO:
+    PARÂMETRO 1: codigo (string)
+    O identificador único para o novo estoque a ser criado.
+
+    RETORNO 1: DICIONÁRIO DE ERRO POR PARÂMETRO NULO:
+    {"retorno": 3, "mensagem": "Parâmetro nulo"}
+
+    RETORNO 2: DICIONÁRIO DE ERRO POR CÓDIGO INVÁLIDO:
+    {"retorno": 2, "mensagem": "Parâmetro 'codigo' incorreto"}
+
+    RETORNO 3: DICIONÁRIO DE ERRO POR ESTOQUE JÁ REGISTRADO:
+    {"retorno": 1, "mensagem": "Estoque já registrado com este código"}
+
+    RETORNO 4: DICIONÁRIO DE SUCESSO:
+    {"retorno": 0, "mensagem": "Estoque registrado com sucesso"}
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - `codigo` é uma string não nula e não vazia.
+    - O `codigo` não deve existir como chave no dicionário `_todos_estoques`.
+
+    Assertiva(s) de saída:
+    - O retorno é um dicionário de status.
+    - Se bem-sucedido, uma nova instância de `Estoque` é criada e adicionada ao `_todos_estoques`.
+
+    E) DESCRIÇÃO:
+    1. Verifica se o `codigo` é nulo.
+    2. Verifica se o `codigo` é uma string válida e não vazia.
+    3. Verifica se o `codigo` já está em uso no dicionário `_todos_estoques`.
+    4. Se as validações passarem, cria uma nova instância da classe `Estoque`.
+    5. Adiciona a nova instância ao dicionário `_todos_estoques` usando o código como chave.
+    6. Retorna um dicionário de sucesso.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_estoques` para armazenar as instâncias.
+    - A classe `Estoque` está definida e disponível.
+
+    G) RESTRIÇÕES:
+    - O armazenamento dos estoques é em memória e não persiste após o término da execução.
     """
     if codigo is None:
         return {"retorno": 3, "mensagem": "Parâmetro nulo"}
