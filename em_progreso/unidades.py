@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from estruturas import Localidade, Funcionario, Estoque, Carrinho
+from estruturas import Funcionario, Estoque, Carrinho
 
 
 __all__ = [
@@ -11,6 +11,24 @@ __all__ = [
 ]
 
 _unidades = {}
+
+class Localidade:
+    def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list[Funcionario], vendas:list[Carrinho], ativo:bool=True):
+        self.nome = nome
+        self.codigo = codigo
+        self.estoque = estoque
+        self.localizacao = localizacao
+        self.funcionarios = funcionarios
+        self.vendas = vendas
+        self.ativo = ativo
+
+    def atualizar(self, atributo:str, valor):
+        if not hasattr(self, atributo):
+            return {"retorno": 1, "mensagem": f"Atributo '{atributo}' não encontrado no produto."}
+
+        setattr(self, atributo, valor)
+        return {"retorno": 0, "mensagem": f"Atributo '{atributo}' atualizado com sucesso."}
+
 
 def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoque:Estoque=None, funcionarios:list[Funcionario]=None, vendas: list[Carrinho]=None):
     """
@@ -163,6 +181,49 @@ def listar_Unidades(incluir_inativas:bool=False):
     # 0: Sucesso 
     return {'retorno': 0, 'dados': ativas}
 
+def atualiza_Unidade(codigo: int, atributo: str, valor):
+    """
+    Atualiza um atributo de uma unidade específica.
+
+    Args:
+        codigo (int): Código da unidade a ser atualizada.
+        atributo (str): Nome do atributo a ser atualizado.
+        valor: Novo valor para o atributo.
+
+    Retorna:
+        0 -> Unidade encontrada e atributo atualizado com sucesso  
+        1 -> Unidade não encontrada  
+        2 -> Unidade desativada  
+        3 -> Parâmetro nulo  
+        4 -> Parâmetro incorreto  
+        5 -> Atributo não encontrado na unidade  
+    """
+
+    if codigo is None or atributo is None or valor is None:
+        return {'retorno': 3, 'mensagem': 'Parâmetro nulo'}
+
+    if not isinstance(codigo, int):
+        return {'retorno': 4, 'mensagem': 'Parâmetro codigo errado'}
+
+    if not isinstance(atributo, str):
+        return {'retorno': 4, 'mensagem': 'Parâmetro atributo errado'}
+
+    unidade = _unidades.get(codigo)
+
+    if not unidade:
+        return {'retorno': 1, 'mensagem': 'Unidade não encontrada'}
+
+    if not unidade.ativo:
+        return {'retorno': 2, 'mensagem': 'Unidade desativada'}
+
+    resultado = unidade.atualizar(atributo, valor)
+
+    if resultado['retorno'] == 1:
+        return {'retorno': 5, 'mensagem': resultado['mensagem']}
+
+    return {'retorno': 0, 'mensagem': resultado['mensagem']}
+
+
 def relatorio_Unidade(codigo:int, periodo:tuple[str,str], incluir_inativas:bool=False):
     """
     Gera um relatório, retornando todas as informações daquela unidade.
@@ -212,6 +273,10 @@ def relatorio_Unidade(codigo:int, periodo:tuple[str,str], incluir_inativas:bool=
     vendas_no_periodo = []
     renda_no_periodo = 0
     for venda in unidade_obj.vendas:
+
+        if venda.data_hora is None:
+            continue
+
         data_venda = datetime.strptime(venda.data_hora, "%Y/%m/%d").date()
         if data_inicio <= data_venda <= data_fim:
             vendas_no_periodo.append({
