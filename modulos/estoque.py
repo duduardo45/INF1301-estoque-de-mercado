@@ -1,6 +1,7 @@
 
 
 
+
 __all__ = [
     "Estoque",
     "registrar_estoque",

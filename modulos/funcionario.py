@@ -2,6 +2,15 @@ from datetime import date
 
 _todos_funcionarios = {}
 
+__all__ = [
+    "Funcionario",
+    "adiciona_funcionario",
+    "novo_funcionario",
+    "consulta_funcionario",
+    "consultar_funcionario_por_nome",
+    "listar_todos_funcionarios",
+]
+
 class Funcionario:
     def __init__(self, nome, codigo, cargo, data_contratacao, data_desligamento=None):
         """
@@ -109,7 +118,7 @@ class Funcionario:
 
 
 
-def adiciona_Funcionario(nome: str, codigo: int, cargo: str, data_contratacao: str):
+def adiciona_funcionario(nome: str, codigo: int, cargo: str, data_contratacao: str):
     """
     Adiciona um novo funcionário ao registro global.
 
@@ -178,6 +187,35 @@ def novo_funcionario(nome: str, codigo: int, cargo: str):
     _todos_funcionarios[codigo] = Funcionario(nome, codigo, cargo, data_contratacao=hoje)
 
     return {'retorno': 0, 'mensagem': 'Funcionário registrado com sucesso'}
+
+
+def consultar_funcionario(codigo: int, incluir_inativos: bool = False):
+    """
+    Consulta um funcionário pelo código.
+
+    Args:
+        codigo (int): código do funcionário a ser consultado
+        incluir_inativos (bool): se True, inclui funcionários desligados na busca
+
+    Retorna:
+        0 -> funcionário encontrado (ativo ou inativo conforme parâmetro)  
+        1 -> funcionário não encontrado  
+        2 -> parâmetro inválido  
+        3 -> parâmetro nulo
+    """
+    if codigo is None:
+        return {'retorno': 3, 'mensagem': 'Parâmetro nulo'}
+    if not isinstance(codigo, int):
+        return {'retorno': 2, 'mensagem': 'Parâmetro código inválido'}
+
+    funcionario = _todos_funcionarios.get(codigo)
+    if not funcionario:
+        return {'retorno': 1, 'mensagem': 'Funcionário não encontrado'}
+    if not incluir_inativos and funcionario.data_desligamento is not None:
+        return {'retorno': 1, 'mensagem': 'Funcionário inativo'}
+    
+    return {'retorno': 0, 'mensagem': 'Funcionário encontrado', 'dados': funcionario}
+
 
 def consultar_funcionario_por_nome(nome: str, incluir_inativos: bool = False):
     """

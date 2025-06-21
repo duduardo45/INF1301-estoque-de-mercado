@@ -1,12 +1,3 @@
-'''
-├── produto.py
-│   ├── class Produto
-│   │   ├── calcular_preco(quantidade)
-│   ├── registrar_produto(nome: str, marca: str, categoria: str, codigo: str, peso: float, preco: float, preco_por_peso: float = None)
-│   ├── atualizar_produto(codigo: int, dados: dict)
-│   ├── consultar_produto_por_codigo(codigo: int)
-│   ├── pesquisar_produto(texto, filtros={})
-'''
 
 
 _todos_produtos = {}
