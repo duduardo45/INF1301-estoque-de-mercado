@@ -1,5 +1,7 @@
 from datetime import date, datetime
-from estruturas import Funcionario, Estoque, Carrinho
+from modulos.funcionario import Funcionario
+from modulos.estoque import Estoque
+from modulos.carrinho import Carrinho
 
 
 __all__ = [
