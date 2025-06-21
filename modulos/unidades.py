@@ -34,7 +34,14 @@ class Localidade:
 
 def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoque:Estoque=None, funcionarios:list[Funcionario]=None, vendas: list[Carrinho]=None):
     """
-    Cadastra uma nova unidade no sistema.
+    Objetivo: Cadastrar uma nova unidade no sistema.
+    
+    Como funciona: A função recebe os dados essenciais de uma nova unidade, como código, nome e localização. Antes de criar a unidade, realiza uma série de validações para garantir que os dados são íntegros:
+    - Verifica se parâmetros obrigatórios não são nulos.
+    - Confirma se o tipo de cada dado está correto (ex: codigo é um inteiro).
+    - Garante que o código da unidade ainda não foi cadastrado, para evitar duplicatas.
+    - Assegura que o nome da unidade não está vazio.
+    Se todos os dados forem válidos, ela cria um objeto do tipo Localidade e o armazena no dicionário _unidades, usando o código como chave. Retorna uma mensagem de sucesso ou um código de erro específico para cada tipo de problema encontrado.
 
     Args:
         codigo (int): Identificador único da unidade.
@@ -93,7 +100,13 @@ def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoq
 
 def remove_Unidade(codigo: int):
     """
-    Marca uma unidade como removida (não a exclui permanentemente).
+    Objetivo: Desativar uma unidade existente, marcando-a como removida.
+
+    Como funciona: Esta função altera o status de uma unidade como inativo para inativo.
+    - Recebe o codigo da unidade a ser removida.
+    - Verifica se o código existe e se a unidade já não foi removida anteriormente.Add commentMore actions
+    - Se a unidade for encontrada e estiver ativa, ela define o atributo ativo do objeto da unidade como False.
+    Isso é útil para manter o histórico de vendas e funcionários associado àquela unidade, mesmo que ela não esteja mais em operação.
 
     Args:
         codigo (int): O código da unidade a ser removida.
@@ -129,8 +142,13 @@ def remove_Unidade(codigo: int):
 
 def consulta_Unidade(codigo:int):
     """
-    Consulta os dados de uma unidade, retornando o objeto referente a unidade buscada
+    Objetivo: Buscar e retornar todas as informações de uma unidade específica.
     
+    Como funciona: Retorna os dados da unidade.
+    - Ela busca no dicionário _unidades pela chave correspondente ao código informado.
+    - Se a unidade for encontrada, a função retorna o objeto completo da Localidade, contendo seu nome, estoque, funcionários, etc.Add commentMore actions
+    - Ela também informa se a unidade consultada está ativa ou desativada, permitindo que o sistema que a utiliza trate cada caso de forma diferente.
+
     Args:
         codigo (int): O código da unidade a ser consultada.
         
@@ -161,7 +179,10 @@ def consulta_Unidade(codigo:int):
 
 def listar_Unidades(incluir_inativas:bool=False):
     """
-    Retorna a lista de unidades ativas ou uma lista vazia.
+    Objetivo: Fornecer uma lista com todas as unidades cadastradas no sistema.
+    
+    Como funciona: Esta função retorna uma coleção de todas as unidades.
+    - Caso o parâmetro for True, mostra na lista de unidades também as que estão inativas.
     
     Args:
         incluir_inativas (bool): Booleano para decidir se as unidades inativas devem ser incluidas na listagem.
@@ -228,7 +249,12 @@ def atualiza_Unidade(codigo: int, atributo: str, valor):
 
 def relatorio_Unidade(codigo:int, periodo:tuple[str,str], incluir_inativas:bool=False):
     """
-    Gera um relatório, retornando todas as informações daquela unidade.
+    Objetivo: Gerar um relatório detalhado sobre as atividades de uma unidade dentro de um período de tempo específico.
+    
+    Como funciona: A partir do codigo da unidade e do período determinado:Add commentMore actions
+    - Valida se o período é válido (não está no futuro, e a data de início é anterior à de fim).
+    - Filtra as vendas e as movimentações de funcionários que ocorreram dentro do intervalo de datas especificado.
+    - Agrupa essas informações em um relatório estruturado.
     
     Args:
         codigo (int): O codigo da unidade a ser buscada
