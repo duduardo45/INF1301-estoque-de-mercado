@@ -20,17 +20,43 @@ __all__ = [
 class Funcionario:
     def __init__(self, nome, codigo, cargo, data_contratacao, data_desligamento=None):
         """
-        Inicializa um objeto Funcionario com os dados fornecidos.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __init__()
 
-        Args:
-            nome (str): Nome completo do funcionário.
-            codigo (int): Código identificador único.
-            cargo (str): Cargo ocupado pelo funcionário.
-            data_contratacao (str): Data de contratação no formato 'YYYY/MM/DD'.
-            data_desligamento (str, opcional): Data de desligamento, se houver.
+        B) OBJETIVO:
+        Inicializar uma nova instância da classe Funcionario, configurando seus atributos básicos com os dados fornecidos.
 
-        Retorna:
-            None
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: nome (string)
+        Nome completo do funcionário.
+        PARÂMETRO 2: codigo (inteiro)
+        Código identificador único do funcionário.
+        PARÂMETRO 3: cargo (string)
+        Cargo ocupado pelo funcionário.
+        PARÂMETRO 4: data_contratacao (string)
+        Data de contratação no formato 'YYYY/MM/DD'.
+        PARÂMETRO 5: data_desligamento (string, opcional)
+        Data de desligamento no formato 'YYYY/MM/DD'. Padrão é None.
+
+        RETORNO: Nenhum (é um método construtor).
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - Os parâmetros são fornecidos com os tipos de dados corretos.
+
+        Assertiva(s) de saída:
+        - Uma nova instância da classe `Funcionario` é criada com seus atributos definidos.
+
+        E) DESCRIÇÃO:
+        1. Este método é o construtor da classe.
+        2. Ele atribui cada parâmetro recebido a um atributo correspondente na instância (`self`), como `self.nome`, `self.codigo`, etc.
+        3. Define o estado inicial do objeto no momento de sua criação.
+
+        F) HIPÓTESES:
+        - A validação da integridade e do formato dos dados (como o formato da data) é realizada antes da chamada a este construtor.
+
+        G) RESTRIÇÕES:
+        - O construtor não realiza nenhuma validação interna dos dados; ele assume que os valores recebidos são válidos.
         """
         self.nome = nome
         self.codigo = codigo
@@ -41,13 +67,39 @@ class Funcionario:
 
     def __str__(self, resumo_vendas: tuple[int, float] = None):
         """
-        Retorna uma representação em string amigável do objeto Funcionario.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __str__()
 
-        Args:
-            resumo_vendas (tuple, opcional): tupla contendo (número de vendas, total arrecadado)
+        B) OBJETIVO:
+        Fornecer uma representação textual e legível de um funcionário, incluindo seu status (ativo/inativo) e, opcionalmente, um resumo de seu desempenho de vendas.
 
-        Retorna:
-            str: descrição resumida do funcionário
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: resumo_vendas (tupla, opcional)
+        Tupla contendo o número de vendas e o valor total arrecadado (ex: (10, 1500.50)).
+
+        RETORNO 1: Uma string formatada descrevendo o funcionário.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Funcionario`.
+        - `resumo_vendas`, se fornecido, é uma tupla com um inteiro e um float.
+
+        Assertiva(s) de saída:
+        - Retorna uma string única com os detalhes do funcionário concatenados.
+
+        E) DESCRIÇÃO:
+        1. Inicia uma lista de strings com informações básicas do funcionário: nome, código, cargo e data de contratação.
+        2. Verifica se o atributo `data_desligamento` possui um valor.
+        3. Se sim, adiciona o status "Desativado" e a data de desligamento à lista.
+        4. Se não, adiciona o status "Ativo".
+        5. Verifica se o parâmetro `resumo_vendas` foi fornecido. Se sim, adiciona os dados de vendas e total arrecadado à lista.
+        6. Concatena todos os itens da lista em uma única string, separados por " | ", e a retorna.
+
+        F) HIPÓTESES:
+        - Nenhuma.
+
+        G) RESTRIÇÕES:
+        - A formatação do valor monetário está fixa em duas casas decimais.
         """
         partes = [
             f"Funcionário: {self.nome}",
@@ -70,6 +122,36 @@ class Funcionario:
         return " | ".join(partes)
     
     def to_json(self):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: to_json()
+
+        B) OBJETIVO:
+        Converter (serializar) a instância do objeto `Funcionario` em um dicionário Python, para que possa ser facilmente salvo em formato JSON.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: DICIONÁRIO SERIALIZÁVEL
+        Um dicionário contendo os atributos da instância como pares de chave-valor.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Funcionario`.
+
+        Assertiva(s) de saída:
+        - O dicionário retornado contém apenas tipos de dados primitivos, compatíveis com a serialização JSON.
+
+        E) DESCRIÇÃO:
+        1. Cria e retorna um dicionário.
+        2. Mapeia cada atributo da instância (`self.nome`, `self.codigo`, etc.) para uma chave de mesmo nome no dicionário.
+
+        F) HIPÓTESES:
+        - Todos os atributos do objeto são de tipos diretamente serializáveis para JSON.
+
+        G) RESTRIÇÕES:
+        - Se novos atributos forem adicionados à classe, este método precisará ser atualizado para incluí-los na serialização.
+        """        
         return {
             "nome": self.nome,
             "codigo": self.codigo,
@@ -80,6 +162,39 @@ class Funcionario:
 
     @classmethod
     def from_json(cls, data: dict):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: from_json()
+
+        B) OBJETIVO:
+        Criar uma nova instância da classe `Funcionario` a partir de um dicionário (geralmente desserializado de um arquivo JSON).
+
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: data (dicionário)
+        Um dicionário contendo os dados do funcionário.
+
+        RETORNO 1: Uma nova instância da classe `Funcionario`.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `data` é um dicionário que contém as chaves obrigatórias ("nome", "codigo", "cargo", "data_contratacao").
+
+        Assertiva(s) de saída:
+        - Uma instância completa e funcional da classe `Funcionario` é retornada.
+
+        E) DESCRIÇÃO:
+        1. Sendo um método de classe, opera sobre a classe (`cls`) em si.
+        2. Extrai os valores para os atributos obrigatórios diretamente do dicionário `data`.
+        3. Utiliza `data.get("data_desligamento", None)` para obter a data de desligamento, tratando o caso em que a chave pode não existir.
+        4. Invoca o construtor da classe (`cls(...)`) com todos os valores extraídos para criar a nova instância.
+        5. Retorna a instância criada.
+
+        F) HIPÓTESES:
+        - A estrutura do dicionário `data` é consistente com a esperada, contendo as chaves necessárias.
+
+        G) RESTRIÇÕES:
+        - Se uma chave obrigatória (ex: "nome") estiver ausente no dicionário, uma exceção `KeyError` será levantada.
+        """    
         return cls(
             nome=data["nome"],
             codigo=data["codigo"],
@@ -90,17 +205,48 @@ class Funcionario:
 
     def atualizar(self, atributo: str, valor):
         """
-        Atualiza um atributo do funcionário.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: atualizar()
 
-        Args:
-            atributo (str): Nome do atributo a ser alterado.
-            valor: Novo valor a ser atribuído.
+        B) OBJETIVO:
+        Atualizar de forma segura um atributo específico de uma instância de funcionário, validando a existência do atributo antes da modificação.
 
-        Retorna:
-            0 -> Sucesso
-            1 -> Atributo inexistente
-            2 -> Parâmetro nulo
-            3 -> Parâmetro incorreto
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: atributo (string)
+        Nome do atributo a ser alterado.
+        PARÂMETRO 2: valor (variado)
+        Novo valor a ser atribuído ao atributo.
+
+        RETORNO 1: DICIONÁRIO DE ERRO POR ATRIBUTO INEXISTENTE:
+        {"retorno": 1, "mensagem": "Atributo '<atributo>' não encontrado"}
+        RETORNO 2: DICIONÁRIO DE ERRO POR PARÂMETRO NULO:
+        {"retorno": 2, "mensagem": "Parâmetro nulo"}
+        RETORNO 3: DICIONÁRIO DE ERRO POR TIPO DE PARÂMETRO INCORRETO:
+        {"retorno": 3, "mensagem": "Parâmetro atributo errado"}
+        RETORNO 4: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Atributo '<atributo>' atualizado com sucesso"}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Funcionario`.
+        - `atributo` é uma string, e `valor` não é nulo.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário indicando o resultado da operação.
+        - Se bem-sucedida, o atributo da instância é modificado.
+
+        E) DESCRIÇÃO:
+        1. Valida se os parâmetros `atributo` e `valor` não são nulos.
+        2. Valida se o `atributo` é do tipo string.
+        3. Utiliza a função `hasattr(self, atributo)` para verificar se a instância possui o atributo especificado. Se não, retorna erro.
+        4. Se o atributo existir, utiliza `setattr(self, atributo, valor)` para definir o novo valor.
+        5. Retorna um dicionário de sucesso.
+
+        F) HIPÓTESES:
+        - A validação do tipo e do valor de `valor` é de responsabilidade do código que chama a função.
+
+        G) RESTRIÇÕES:
+        - Permite a modificação de qualquer atributo existente na classe, sem uma lista de permissão.
         """
         if atributo is None or valor is None:
             return {'retorno': 2, 'mensagem': 'Parâmetro nulo'}
@@ -114,14 +260,41 @@ class Funcionario:
 
     def desligar_funcionario(self, data: str = None):
         """
-        Registra o desligamento do funcionário.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: desligar_funcionario()
 
-        Args:
-            data (str, opcional): Data do desligamento. Se não informada, usa a data atual.
+        B) OBJETIVO:
+        Registrar a data de desligamento de um funcionário, efetivamente marcando-o como inativo no sistema.
 
-        Retorna:
-            0 -> Funcionário desligado com sucesso
-            1 -> Já desligado
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: data (string, opcional)
+        Data do desligamento no formato 'YYYY/MM/DD'. Se não informada, utiliza a data atual do sistema.
+
+        RETORNO 1: DICIONÁRIO DE ERRO POR FUNCIONÁRIO JÁ DESLIGADO:
+        {"retorno": 1, "mensagem": "Funcionário já desligado"}
+        RETORNO 2: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Funcionário desligado com sucesso"}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância de um funcionário atualmente ativo (`data_desligamento` é `None`).
+        - `data`, se fornecida, é uma string.
+
+        Assertiva(s) de saída:
+        - O atributo `data_desligamento` da instância é preenchido com uma string de data.
+
+        E) DESCRIÇÃO:
+        1. Verifica se o atributo `data_desligamento` já possui um valor. Se sim, retorna um erro informando que o funcionário já está desligado.
+        2. Se o parâmetro `data` não for fornecido (`None`), a função obtém a data atual do sistema.
+        3. Formata a data para uma string no padrão "YYYY/MM/DD".
+        4. Atribui a string de data ao atributo `self.data_desligamento`.
+        5. Retorna um dicionário de sucesso.
+
+        F) HIPÓTESES:
+        - O módulo `datetime` e sua classe `date` estão disponíveis para obter a data atual.
+
+        G) RESTRIÇÕES:
+        - A função não valida o formato da string de data recebida como parâmetro.
         """
         if self.data_desligamento is not None:
             return {'retorno': 1, 'mensagem': 'Funcionário já desligado'}
@@ -134,14 +307,73 @@ class Funcionario:
 
     def ativo(self):
         """
-        Verifica se o funcionário está ativo (sem data de desligamento).
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: ativo()
 
-        Retorna:
-            bool: True se o funcionário estiver ativo, False caso contrário.
+        B) OBJETIVO:
+        Verificar de forma simples e direta se um funcionário está ativo no sistema.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: Booleano (`True` se o funcionário estiver ativo, `False` caso contrário).
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Funcionario`.
+
+        Assertiva(s) de saída:
+        - O retorno é estritamente `True` ou `False`.
+
+        E) DESCRIÇÃO:
+        1. A função avalia a condição `self.data_desligamento is None`.
+        2. Um funcionário é considerado ativo se não possuir uma data de desligamento.
+        3. Retorna o resultado booleano dessa avaliação.
+
+        F) HIPÓTESES:
+        - O atributo `data_desligamento` é rigorosamente mantido como `None` para funcionários ativos.
+
+        G) RESTRIÇÕES:
+        - Nenhuma.
         """
         return self.data_desligamento is None
 
 def salvar_funcionarios():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: salvar_funcionarios()
+
+    B) OBJETIVO:
+    Persistir em um arquivo JSON o estado atual de todos os funcionários armazenados na memória.
+
+    C) ACOPLAMENTO:
+    PARÂMETROS: Nenhum.
+
+    RETORNO: Nenhum valor explícito. A função realiza uma operação de escrita em arquivo.
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O dicionário global `_todos_funcionarios` contém instâncias da classe `Funcionario`.
+
+    Assertiva(s) de saída:
+    - O arquivo definido em `FUNCIONARIOS_JSON` é criado ou sobrescrito com os dados dos funcionários.
+
+    E) DESCRIÇÃO:
+    1. Inicializa um dicionário vazio `json_funcionarios`.
+    2. Itera sobre cada par de código-funcionário no dicionário global `_todos_funcionarios`.
+    3. Para cada objeto, invoca seu método `to_json()` e armazena o resultado no `json_funcionarios`, usando o código (convertido para string) como chave.
+    4. Abre o arquivo de destino em modo de escrita ("w").
+    5. Utiliza `json.dump()` para escrever o dicionário `json_funcionarios` no arquivo, com formatação indentada.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_funcionarios`.
+    - A constante `FUNCIONARIOS_JSON` aponta para um caminho de arquivo válido e com permissão de escrita.
+    - A classe `Funcionario` possui um método `to_json()`.
+
+    G) RESTRIÇÕES:
+    - A função sobrescreve o arquivo de destino sem aviso.
+    - Possíveis erros de I/O não são tratados internamente.
+    """
     json_funcionarios = {}
 
     for codigo, f in _todos_funcionarios.items():
@@ -151,6 +383,40 @@ def salvar_funcionarios():
         json.dump(json_funcionarios, f, ensure_ascii=False, indent=4)
 
 def carregar_funcionarios():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: carregar_funcionarios()
+
+    B) OBJETIVO:
+    Ler os dados de funcionários de um arquivo JSON e carregá-los para a memória, populando o dicionário global.
+
+    C) ACOPLAMENTO:
+    PARÂMETROS: Nenhum.
+
+    RETORNO: Nenhum valor explícito. A função modifica o estado do dicionário global `_todos_funcionarios`.
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O arquivo especificado pela constante `FUNCIONARIOS_JSON` deve existir e ser um JSON válido.
+
+    Assertiva(s) de saída:
+    - O dicionário global `_todos_funcionarios` é preenchido com instâncias de `Funcionario` recriadas a partir do arquivo.
+
+    E) DESCRIÇÃO:
+    1. Utiliza um bloco `try-except` para tratar o caso de o arquivo não existir (`FileNotFoundError`), retornando silenciosamente.
+    2. Se o arquivo existir, ele é aberto e seu conteúdo JSON é carregado usando `json.load()`.
+    3. Itera sobre cada par de código-dados no dicionário carregado.
+    4. Para cada item, invoca o método de classe `Funcionario.from_json()` para criar uma nova instância.
+    5. Armazena a instância no dicionário global `_todos_funcionarios`, convertendo a chave de string para inteiro.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_funcionarios`.
+    - A constante `FUNCIONARIOS_JSON` aponta para o caminho correto.
+    - A classe `Funcionario` implementa um método de classe `from_json()` funcional.
+
+    G) RESTRIÇÕES:
+    - A função não trata erros de formatação no JSON (`JSONDecodeError`) ou de chaves ausentes (`KeyError`).
+    """
     try:
         with open(FUNCIONARIOS_JSON, "r", encoding="utf-8") as f:
             json_funcionarios = json.load(f)
