@@ -10,7 +10,7 @@ __all__ = [
     "adiciona_funcionario",
     "novo_funcionario",
     "consultar_funcionario",
-    "consultar_funcionarios_por_nome",
+    "consultar_funcionario_por_nome",
     "listar_todos_funcionarios",
     "salvar_funcionarios",
     "carregar_funcionarios"
