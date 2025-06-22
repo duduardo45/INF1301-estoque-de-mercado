@@ -9,8 +9,6 @@ unidade_ativa = None
 usuario_atual = None
 carrinho_atual = None
 
-gera_dados_teste()
-
 def carregar_dados():
     """Carrega todos os dados dos arquivos JSON para a memória."""
     carregar_produtos()
