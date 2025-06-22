@@ -5,7 +5,7 @@ from .produto import Produto
 
 __all__ = [
     "Carrinho",
-    "cria_carrinho",
+    "criar_carrinho",
     "consultar_carrinho_por_id",
     "listar_todos_carrinhos",
     "salvar_carrinhos",

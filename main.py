@@ -32,7 +32,7 @@ def selecionar_unidade():
         if escolha == '0':
             return 'sair'
         elif escolha == '2':
-            # Chamar função para registrar nova unidade
+            opcao_registra_nova_unidade()
             pass
         elif escolha == '1':
             unidades = listar_Unidades(incluir_inativas=False)
@@ -360,6 +360,7 @@ def menu_finalizar_compra_cliente():
         print("Opção inválida.")
 
 
+def opcao_registra_nova_unidade(): pass
 def opcao_registrar_novo_produto(): pass
 def opcao_atualizar_produto_existente(): pass
 def opcao_registrar_produto_no_estoque(): pass
