@@ -295,7 +295,7 @@ class Carrinho:
 
 
 
-    def finaliza_carrinho(self, funcionario: 'Funcionario'):
+    def finaliza_carrinho(self, funcionario: 'Funcionario'=None):
         """
         ESPECIFICAÇÃO DE FUNÇÃO:
         A) NOME: finaliza_carrinho() (Método de Carrinho)
