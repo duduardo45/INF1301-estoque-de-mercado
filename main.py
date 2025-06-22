@@ -1,8 +1,24 @@
-from modulos.unidades import listar_Unidades, consulta_Unidade
-from modulos.funcionario import consultar_funcionario
+from modulos.carrinho import *
+from modulos.estoque import *
+from modulos.funcionario import * # consultar_funcionario
+from modulos.produto import *
+from modulos.unidades import * # listar_Unidades, consulta_Unidade
 
 unidade_ativa = None
 usuario_atual = None
+
+def carregar_dados():
+    carregar_carrinhos()
+    carregar_estoques()
+    carregar_funcionarios()
+    carregar_unidades()
+
+def salvar_dados():
+    salvar_carrinhos()
+    salvar_estoques()
+    salvar_funcionarios()
+    salvar_unidades()
+
 
 def selecionar_unidade():
     while True:
@@ -13,7 +29,7 @@ def selecionar_unidade():
         escolha = input("Escolha uma opção: ")
 
         if escolha == '0':
-            exit()
+            return 'sair'
         elif escolha == '2':
             # Chamar função para registrar nova unidade
             pass
@@ -149,10 +165,12 @@ def menu_cliente():
 def main():
     global unidade_ativa, usuario_atual
     print("Bem-vindo ao sistema de gestão de unidades!")
-
+    carregar_dados()
     while True:
         if unidade_ativa is None:
             unidade_ativa = selecionar_unidade()
+            if unidade_ativa == 'sair':
+                break
             continue
 
         if usuario_atual is None:
@@ -163,6 +181,11 @@ def main():
             menu_cliente()
         elif hasattr(usuario_atual, 'nome'):  # Funcionário
             menu_funcionario()
+
+    print("\n\nObrigado por usar o sistema!")
+    salvar_dados()
+
+
 
 
 # Menus auxiliares com opções descritas:
