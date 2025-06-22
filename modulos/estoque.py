@@ -1,6 +1,7 @@
 __all__ = [
     "Estoque",
     "registrar_estoque",
+    "listar_todos_estoques",
 ]
 
 
@@ -465,6 +466,11 @@ class Estoque:
         if codigo not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado."}
 
+        if codigo not in self.estoque:
+            self.estoque[codigo] = 0
+        if codigo not in self.exposicao:
+            self.exposicao[codigo] = 0
+
         if destino == 'estoque':
             atual = self.estoque[codigo]
             limite = self.capacidades[codigo]["estoque"]
@@ -853,3 +859,46 @@ def registrar_estoque(codigo: str):
 
     _todos_estoques[codigo] = Estoque(codigo=codigo)
     return {"retorno": 0, "mensagem": "Estoque registrado com sucesso"}
+
+def listar_todos_estoques():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: listar_todos_estoques()
+
+    B) OBJETIVO:
+    Retornar uma lista de todos os estoques registrados no sistema.
+
+    C) ACOPLAMENTO:
+    Sem parâmetros de entrada.
+
+    RETORNO 1: DICIONÁRIO SE NÃO HOUVER ESTOQUES:
+    {"retorno": 1, "mensagem": "Nenhum estoque registrado", "dados": []}
+
+    RETORNO 2: DICIONÁRIO DE SUCESSO:
+    {"retorno": 0, "mensagem": "Estoques listados com sucesso", "dados": [<lista de objetos Estoque>]}
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - Nenhuma.
+
+    Assertiva(s) de saída:
+    - O retorno é um dicionário com a chave "dados" contendo uma lista de objetos Estoque.
+
+    E) DESCRIÇÃO:
+    1. Obtém todos os estoques registrados em `_todos_estoques`.
+    2. Retorna um dicionário com a lista ou uma mensagem informando que não há estoques registrados.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_estoques`.
+
+    G) RESTRIÇÕES:
+    - A função retorna todos os objetos, o que pode consumir memória em bases grandes.
+    """
+    estoques = [
+        e for e in _todos_estoques.values()
+    ]
+
+    if not estoques or len(_todos_estoques) == 0:
+        return {'retorno': 1, 'mensagem': 'Nenhum estoque registrado', 'dados': []}
+
+    return {'retorno': 0, 'mensagem': 'Estoques listados com sucesso', 'dados': estoques}

@@ -6,7 +6,7 @@ __all__ = [
     "Funcionario",
     "adiciona_funcionario",
     "novo_funcionario",
-    "consulta_funcionario",
+    "consultar_funcionario",
     "consultar_funcionario_por_nome",
     "listar_todos_funcionarios",
 ]

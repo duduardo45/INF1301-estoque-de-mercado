@@ -6,6 +6,7 @@ __all__ = [
     "registrar_produto",
     "atualizar_produto",
     "pesquisar_produto",
+    "listar_todos_produtos",
 ]
 
 
@@ -400,3 +401,46 @@ def pesquisar_produto(texto: str, filtros: dict = {}):
                 resultados.append(produto)
 
     return {"retorno": 0, "mensagem": f"{len(resultados)} produto(s) encontrado(s)", "dados": resultados}
+
+def listar_todos_produtos():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: listar_todos_produtos()
+
+    B) OBJETIVO:
+    Retornar uma lista de todos os produtos registrados no sistema.
+
+    C) ACOPLAMENTO:
+    Sem parâmetros de entrada.
+
+    RETORNO 1: DICIONÁRIO SE NÃO HOUVER PRODUTOS:
+    {"retorno": 1, "mensagem": "Nenhum produto registrado", "dados": []}
+
+    RETORNO 2: DICIONÁRIO DE SUCESSO:
+    {"retorno": 0, "mensagem": "Produtos listados com sucesso", "dados": [<lista de objetos Produto>]}
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - Nenhuma.
+
+    Assertiva(s) de saída:
+    - O retorno é um dicionário com a chave "dados" contendo uma lista de objetos Produto. Pode estar vazia.
+
+    E) DESCRIÇÃO:
+    1. Obtém todos os produtos registrados em `_todos_produtos`.
+    2. Retorna um dicionário com a lista ou uma mensagem informando que não há produtos registrados.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_produtos`.
+
+    G) RESTRIÇÕES:
+    - A função retorna todos os objetos, o que pode consumir memória em bases grandes.
+    """
+    produtos = [
+        p for p in _todos_produtos.values()
+    ]
+
+    if not produtos:
+        return {'retorno': 1, 'mensagem': 'Nenhum produto registrado', 'dados': []}
+
+    return {'retorno': 0, 'mensagem': 'Produtos listados com sucesso', 'dados': produtos}
