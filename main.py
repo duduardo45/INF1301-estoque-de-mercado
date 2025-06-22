@@ -6,6 +6,7 @@ from modulos.unidades import * # listar_Unidades, consulta_Unidade
 
 unidade_ativa = None
 usuario_atual = None
+carrinho_atual = None
 
 def carregar_dados():
     carregar_carrinhos()
@@ -139,18 +140,18 @@ def menu_cliente():
         escolha = input("Escolha uma opção: ")
 
         if escolha == '1':
-            # produtos em exposição apenas
+            opcao_listar_todos_produtos_exibicao()
             pass
         elif escolha == '2':
             menu_produtos_disponiveis()
         elif escolha == '3':
-            # adicionar itens ao carrinho
+            opcao_adicionar_item_ao_carrinho()
             pass
         elif escolha == '4':
-            # remover itens do carrinho
+            opcao_remover_item_do_carrinho()
             pass
         elif escolha == '5':
-            # listar itens do carrinho
+            opcao_listar_itens_do_carrinho()
             pass
         elif escolha == '6':
             menu_finalizar_compra_cliente()
@@ -193,22 +194,58 @@ def menu_gerenciar_produtos():
     print("\nGerenciar Produtos")
     print("1 - Registrar novo produto")
     print("2 - Atualizar produto existente")
-    print("3 - Verificar produtos disponíveis") # menu_produtos_disponiveis()
+    print("3 - Verificar produtos disponíveis")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_registrar_novo_produto()
+    elif opcao == "2":
+        opcao_atualizar_produto_existente()
+    elif opcao == "3":
+        menu_produtos_disponiveis()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
 
 
 def menu_gerenciar_estoque():
     print("\nGerenciar Estoque")
     print("1 - Registrar produto no estoque")
-    print("2 - Adicionar quantidade") # estoque ou exposição
+    print("2 - Adicionar quantidade")
     print("3 - Mover produto para exposição")
-    print("4 - Consultar quantidade e capacidade de um produto") # estoque ou exposição
+    print("4 - Consultar quantidade e capacidade de um produto")
     print("5 - Atualizar capacidade de um produto")
     print("6 - Excluir registro de produto do estoque")
-    print("7 - Listar todos os produtos") # com ou sem detalhes
+    print("7 - Listar todos os produtos")
     print("8 - Listar produtos em falta")
     print("9 - Verificar consistência do estoque")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_registrar_produto_no_estoque()
+    elif opcao == "2":
+        opcao_adicionar_quantidade_estoque()
+    elif opcao == "3":
+        opcao_mover_produto_para_exposicao()
+    elif opcao == "4":
+        opcao_consultar_quantidade_estoque()
+    elif opcao == "5":
+        opcao_atualizar_capacidade_produto()
+    elif opcao == "6":
+        opcao_excluir_produto_estoque()
+    elif opcao == "7":
+        opcao_listar_todos_produtos_estoque()
+    elif opcao == "8":
+        opcao_listar_produtos_em_falta()
+    elif opcao == "9":
+        opcao_verificar_consistencia_estoque()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
 
 
 def menu_gerenciar_funcionarios():
@@ -220,6 +257,24 @@ def menu_gerenciar_funcionarios():
     print("5 - Consultar funcionário por nome")
     print("6 - Listar todos os funcionários da unidade")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_admitir_novo_funcionario()
+    elif opcao == "2":
+        opcao_atualizar_funcionario()
+    elif opcao == "3":
+        opcao_desligar_funcionario()
+    elif opcao == "4":
+        opcao_consultar_funcionario_por_codigo()
+    elif opcao == "5":
+        opcao_consultar_funcionario_por_nome()
+    elif opcao == "6":
+        opcao_listar_funcionarios_unidade()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
 
 
 def menu_vendas_funcionario():
@@ -227,10 +282,28 @@ def menu_vendas_funcionario():
     print("1 - Criar novo carrinho")
     print("2 - Adicionar item ao carrinho")
     print("3 - Remover item do carrinho")
-    print("4 - Listar itens do carrinho") # resumido ou detalhado
+    print("4 - Listar itens do carrinho")
     print("5 - Limpar carrinho")
     print("6 - Finalizar venda")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_criar_novo_carrinho()
+    elif opcao == "2":
+        opcao_adicionar_item_ao_carrinho()
+    elif opcao == "3":
+        opcao_remover_item_do_carrinho()
+    elif opcao == "4":
+        opcao_listar_itens_do_carrinho()
+    elif opcao == "5":
+        opcao_limpar_carrinho()
+    elif opcao == "6":
+        opcao_finalizar_venda()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
 
 
 def menu_gerenciar_unidade():
@@ -239,6 +312,18 @@ def menu_gerenciar_unidade():
     print("2 - Consultar dados da unidade atual")
     print("3 - Atualizar atributos da unidade")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_gerar_relatorio_movimentacoes()
+    elif opcao == "2":
+        opcao_consultar_dados_unidade()
+    elif opcao == "3":
+        opcao_atualizar_atributos_unidade()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
 
 
 def menu_produtos_disponiveis():
@@ -247,12 +332,65 @@ def menu_produtos_disponiveis():
     print("2 - Pesquisar produto por nome ou categoria")
     print("3 - Verificar produto por codigo")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_listar_todos_produtos()
+    elif opcao == "2":
+        opcao_pesquisar_produto_nome_ou_categoria()
+    elif opcao == "3":
+        opcao_verificar_produto_por_codigo()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
 
 
 def menu_finalizar_compra_cliente():
     print("\nFinalizar Compra")
     print("1 - Finalizar e pagar compra")
     print("0 - Voltar")
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == "1":
+        opcao_finalizar_e_pagar_compra()
+    elif opcao == "0":
+        return
+    else:
+        print("Opção inválida.")
+
+
+def opcao_registrar_novo_produto(): pass
+def opcao_atualizar_produto_existente(): pass
+def opcao_registrar_produto_no_estoque(): pass
+def opcao_adicionar_quantidade_estoque(): pass
+def opcao_mover_produto_para_exposicao(): pass
+def opcao_consultar_quantidade_estoque(): pass
+def opcao_atualizar_capacidade_produto(): pass
+def opcao_excluir_produto_estoque(): pass
+def opcao_listar_todos_produtos_estoque(): pass
+def opcao_listar_todos_produtos_exibicao(): pass
+def opcao_listar_produtos_em_falta(): pass
+def opcao_verificar_consistencia_estoque(): pass
+def opcao_admitir_novo_funcionario(): pass
+def opcao_atualizar_funcionario(): pass
+def opcao_desligar_funcionario(): pass
+def opcao_consultar_funcionario_por_codigo(): pass
+def opcao_consultar_funcionario_por_nome(): pass
+def opcao_listar_funcionarios_unidade(): pass
+def opcao_criar_novo_carrinho(): pass
+def opcao_adicionar_item_ao_carrinho(): pass
+def opcao_remover_item_do_carrinho(): pass
+def opcao_listar_itens_do_carrinho(): pass
+def opcao_limpar_carrinho(): pass
+def opcao_finalizar_venda(): pass
+def opcao_gerar_relatorio_movimentacoes(): pass
+def opcao_consultar_dados_unidade(): pass
+def opcao_atualizar_atributos_unidade(): pass
+def opcao_listar_todos_produtos(): pass
+def opcao_pesquisar_produto_nome_ou_categoria(): pass
+def opcao_verificar_produto_por_codigo(): pass
+def opcao_finalizar_e_pagar_compra(): pass
 
 
 if __name__ == '__main__':
