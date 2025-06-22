@@ -63,6 +63,34 @@ class Produto:
             partes.append(f"Subtotal: {self.calcula_preco(quantidade)}")
         return " | ".join(partes)
 
+
+
+    def to_json(self):
+        return {
+            "nome": self.nome,
+            "marca": self.marca,
+            "categoria": self.categoria,
+            "codigo": self.codigo,
+            "peso": self.peso,
+            "preco": self.preco,
+            "preco_por_peso": self.preco_por_peso
+        }
+    
+
+
+    @classmethod
+    def from_json(cls, json_dict):
+        nome = json_dict["nome"]
+        marca = json_dict["marca"]
+        categoria = json_dict["categoria"]
+        codigo = json_dict["codigo"]
+        peso = json_dict["peso"]
+        preco = json_dict["preco"]
+        preco_por_peso = json_dict["preco_por_peso"]
+        return cls(nome, marca, categoria, codigo, peso, preco, preco_por_peso)
+
+
+
     def calcula_preco(self, quantidade):
         """
         Calcula o preço total para uma dada quantidade do produto.

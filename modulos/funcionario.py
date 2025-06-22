@@ -62,6 +62,25 @@ class Funcionario:
             partes.append(f"Total arrecadado: R$ {total_arrecadado:.2f}")
 
         return " | ".join(partes)
+    
+    def to_json(self):
+        return {
+            "nome": self.nome,
+            "codigo": self.codigo,
+            "cargo": self.cargo,
+            "data_contratacao": self.data_contratacao,
+            "data_desligamento": self.data_desligamento
+        }
+
+    @classmethod
+    def from_json(cls, data: dict):
+        return cls(
+            nome=data["nome"],
+            codigo=data["codigo"],
+            cargo=data["cargo"],
+            data_contratacao=data["data_contratacao"],
+            data_desligamento=data.get("data_desligamento")
+        )
 
     def atualizar(self, atributo: str, valor):
         """

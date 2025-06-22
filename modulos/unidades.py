@@ -24,6 +24,37 @@ class Localidade:
         self.vendas = vendas
         self.ativo = ativo
 
+    def to_json(self):
+        return {
+            "nome": self.nome,
+            "codigo": self.codigo,
+            "localizacao": self.localizacao,
+            "estoque": self.estoque.to_json(),
+            "funcionarios": [f.to_json() for f in self.funcionarios],
+            "vendas": [v.to_json() for v in self.vendas],
+            "ativo": self.ativo
+        }
+
+    @classmethod
+    def from_json(cls, data: dict):
+        from modulos.funcionario import Funcionario
+        from modulos.carrinho import Carrinho
+        from modulos.estoque import Estoque
+
+        estoque = Estoque.from_json(data["estoque"])
+        funcionarios = [Funcionario.from_json(f) for f in data["funcionarios"]]
+        vendas = [Carrinho.from_json(v) for v in data["vendas"]]
+
+        return cls(
+            nome=data["nome"],
+            codigo=data["codigo"],
+            localizacao=tuple(data["localizacao"]),
+            estoque=estoque,
+            funcionarios=funcionarios,
+            vendas=vendas,
+            ativo=data.get("ativo", True)
+        )
+
     def atualizar(self, atributo:str, valor):
         if not hasattr(self, atributo):
             return {"retorno": 1, "mensagem": f"Atributo '{atributo}' não encontrado no produto."}

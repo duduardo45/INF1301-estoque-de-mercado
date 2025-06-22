@@ -30,6 +30,44 @@ class Carrinho:
         self.itens = itens
         self.total = total
         self.funcionario = funcionario
+    
+
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "data_hora": self.data_hora,
+            "itens": {p.codigo: qtd for p, qtd in self.itens.items()},
+            "total": self.total,
+            "funcionario": self.funcionario.codigo if self.funcionario else None
+        }
+
+    @classmethod
+    def from_json(cls, data: dict):
+        from modulos.produto import consultar_produto_por_codigo
+        from modulos.funcionario import consultar_funcionario
+
+        itens = {}
+        for cod, qtd in data["itens"].items():
+            res = consultar_produto_por_codigo(cod)
+            if res["retorno"] != 0:
+                raise ValueError(f"Produto {cod} não encontrado. Inicialize antes de carregar o carrinho.")
+            itens[res["dados"]] = qtd
+
+        funcionario = None
+        if data.get("funcionario"):
+            res = consultar_funcionario(data["funcionario"], incluir_inativos=True)
+            if res["retorno"] != 0:
+                raise ValueError(f"Funcionário {data['funcionario']} não encontrado.")
+            funcionario = res["dados"]
+
+        return cls(
+            id=data["id"],
+            data_hora=data.get("data_hora"),
+            itens=itens,
+            total=data.get("total"),
+            funcionario=funcionario
+        )
 
 
 
@@ -332,3 +370,12 @@ class Carrinho:
         self.data_hora = date.today().strftime("%Y/%m/%d")
         self.funcionario = funcionario
         return {'retorno': 0, 'mensagem': 'Carrinho finalizado'}
+    
+
+_todos_carrinhos: {}
+
+def consultar_carrinho_por_id():
+    pass
+
+def listar_todos_carrinhos():
+    pass

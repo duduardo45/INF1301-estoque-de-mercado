@@ -18,10 +18,18 @@ class Estoque:
         Returns:
             None
         """
+
+        if estoque is None:
+            estoque = {}
+        if exposicao is None:
+            exposicao = {}
+        if capacidades is None:
+            capacidades = {}
+
         self.codigo = codigo
-        self.estoque = {}
-        self.exposicao = {}
-        self.capacidades = {}
+        self.estoque = estoque
+        self.exposicao = exposicao
+        self.capacidades = capacidades
 
 
 
@@ -49,6 +57,35 @@ class Estoque:
             descricao += "Faltando na exposição: " + ", ".join(faltas_exposicao) + "\n"
 
         return descricao.strip()
+    
+
+
+    def to_json(self):
+        return {
+            "codigo": self.codigo,
+            "estoque": {p.codigo: qtd for p, qtd in self.estoque.items()},
+            "exposicao": {p.codigo: qtd for p, qtd in self.exposicao.items()},
+            "capacidades": {
+                p.codigo: {"estoque": cap["estoque"], "exposicao": cap["exposicao"]}
+                for p, cap in self.capacidades.items()
+            }
+        }
+
+    @classmethod
+    def from_json(cls, data: dict):
+        from modulos.produto import consultar_produto_por_codigo
+
+        estoque = cls(codigo=data["codigo"])
+        for codigo in data["capacidades"]:
+            res = consultar_produto_por_codigo(codigo)
+            if res["retorno"] != 0:
+                raise ValueError(f"Produto {codigo} não encontrado. Inicialize antes de carregar o estoque.")
+            produto = res["dados"]
+            estoque.capacidades[produto] = data["capacidades"][codigo]
+            estoque.estoque[produto] = data["estoque"].get(codigo, 0)
+            estoque.exposicao[produto] = data["exposicao"].get(codigo, 0)
+
+        return estoque
 
 
 
