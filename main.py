@@ -508,8 +508,10 @@ def opcao_registrar_produto_no_estoque():
     try:
         cap_estoque = int(input("Capacidade no estoque interno: "))
         cap_exposicao = int(input("Capacidade na exposição (prateleira): "))
+        if cap_estoque or cap_exposicao < 0:
+            raise ValueError
     except ValueError:
-        print("Capacidades devem ser números inteiros.")
+        print("Capacidades devem ser números inteiros positivos.")
         return
         
     resultado = unidade_ativa.estoque.registrar_produto(produto, cap_estoque, cap_exposicao)
@@ -529,8 +531,10 @@ def opcao_adicionar_quantidade_estoque():
 
     try:
         quantidade = int(input("Quantidade a adicionar: "))
+        if quantidade < 0:
+            raise ValueError
     except ValueError:
-        print("Quantidade deve ser um número inteiro.")
+        print("Quantidade deve ser um número inteiro positivo.")
         return
 
     destino_in = input("Adicionar em (1 - Estoque interno, 2 - Exposição): ")
@@ -553,6 +557,8 @@ def opcao_mover_produto_para_exposicao():
     
     try:
         quantidade = int(input("Quantidade a mover: "))
+        if quantidade < 0:
+            raise ValueError
     except ValueError:
         print("Quantidade deve ser um número inteiro.")
         return
