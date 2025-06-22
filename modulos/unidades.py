@@ -79,7 +79,7 @@ def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoq
     
     # caso não sejam especificados define como vazios
     if estoque is None:
-        estoque = Estoque()
+        estoque = Estoque(codigo=f"est_{codigo}")
     if funcionarios is None:
         funcionarios = []
     if vendas is None:

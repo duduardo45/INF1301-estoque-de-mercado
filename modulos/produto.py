@@ -98,12 +98,10 @@ def _valida_codigo_barras(codigo: str):
     if not isinstance(codigo, str):
         return False
 
-    codigo_str = codigo.zfill(13)  # garante 13 dígitos com zeros à esquerda
-
-    if len(codigo_str) != 13 or not codigo_str.isdigit():
+    if len(codigo) != 13 or not codigo.isdigit():
         return False
 
-    numeros = [int(d) for d in codigo_str]
+    numeros = [int(d) for d in codigo]
     soma_impares = sum(numeros[i] for i in range(0, 12, 2))
     soma_pares = sum(numeros[i] for i in range(1, 12, 2)) * 3
     total = soma_impares + soma_pares
