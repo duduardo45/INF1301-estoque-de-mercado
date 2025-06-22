@@ -86,7 +86,25 @@ def identificar_usuario():
         return None
 
 def identificar_funcionario():
-    """Identifica um funcionário pelo seu código."""
+    """Identifica um funcionário pelo seu código ou permite o cadastro do primeiro."""
+    # Primeiro, garante que uma unidade foi selecionada.
+    if not unidade_ativa:
+        print("Nenhuma unidade selecionada.")
+        return None
+
+    # VERIFICAÇÃO: Se não há funcionários na unidade, oferece o cadastro do primeiro.
+    if not unidade_ativa.funcionarios:
+        print("\nNenhum funcionário cadastrado nesta unidade.")
+        escolha = input("Deseja cadastrar o primeiro funcionário? (s/n): ").lower()
+        if escolha == 's':
+            # Chama a função já existente para admitir um funcionário
+            opcao_admitir_novo_funcionario()
+        
+        # Retorna ao menu de identificação para que o usuário possa logar
+        # com o funcionário recém-criado ou tentar outra opção.
+        return None
+
+    # Se já existem funcionários, o fluxo normal de login continua.
     codigo = input("Digite seu código de funcionário (ou 0 para voltar): ")
     if codigo == '0':
         return None
@@ -97,21 +115,18 @@ def identificar_funcionario():
         print("Código inválido.")
         return None
     
-    # Verifica se o funcionário pertence à unidade ativa
-    if unidade_ativa:
-        for f in unidade_ativa.funcionarios:
-            if f.codigo == codigo:
-                if f.ativo():
-                    print(f"Funcionário '{f.nome}' identificado.")
-                    return f
-                else:
-                    print("Este funcionário está inativo.")
-                    return None
-        print("Funcionário não encontrado nesta unidade.")
-        return None
-    else:
-        print("Nenhuma unidade selecionada.")
-        return None
+    # Procura pelo funcionário na unidade ativa
+    for f in unidade_ativa.funcionarios:
+        if f.codigo == codigo:
+            if f.ativo():
+                print(f"Funcionário '{f.nome}' identificado.")
+                return f
+            else:
+                print("Este funcionário está inativo.")
+                return None
+                
+    print("Funcionário não encontrado nesta unidade.")
+    return None
 
 
 def menu_funcionario():
@@ -186,6 +201,16 @@ def main():
     """Função principal que executa o loop do programa."""
     global unidade_ativa, usuario_atual
     print("Bem-vindo ao sistema de gestão de unidades!")
+
+    while True:
+        resp = input("Você gostaria de adicionar dados para teste? (s/n): ")
+        if resp == "s":
+            gera_dados_teste()
+            break
+        elif resp == "n":
+            break
+        else:
+            print("Insira uma resposta válida")
     carregar_dados()
     while True:
         if unidade_ativa is None:
