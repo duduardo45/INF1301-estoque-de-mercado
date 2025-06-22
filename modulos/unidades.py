@@ -24,6 +24,58 @@ _unidades = {}
 
 class Localidade:
     def __init__(self, nome: str, codigo: int, estoque: Estoque, localizacao: tuple[float, float], funcionarios: list[Funcionario], vendas:list[Carrinho], ativo:bool=True):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __init__()
+
+        B) OBJETIVO:
+        Inicializar (construir) uma nova instância do objeto Localidade, atribuindo todos os valores e objetos relacionados aos seus respectivos atributos.
+
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: nome (string)
+        Nome descritivo da unidade.
+
+        PARÂMETRO 2: codigo (inteiro)
+        Código identificador único para a unidade.
+
+        PARÂMETRO 3: estoque (Estoque)
+        Instância da classe Estoque associada a esta unidade.
+
+        PARÂMETRO 4: localizacao (tupla[float, float])
+        Tupla contendo a latitude e longitude da unidade.
+
+        PARÂMETRO 5: funcionarios (lista[Funcionario])
+        Lista contendo instâncias da classe Funcionario que trabalham na unidade.
+
+        PARÂMETRO 6: vendas (lista[Carrinho])
+        Lista contendo instâncias da classe Carrinho que representam as vendas da unidade.
+
+        PARÂMETRO 7: ativo (booleano, opcional)
+        Indica se a unidade está ativa. O valor padrão é True.
+
+        RETORNO: Nenhum. Este é um método construtor.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - Os parâmetros são fornecidos com os tipos de dados corretos.
+        - As instâncias de `Estoque`, `Funcionario` e `Carrinho` são objetos válidos.
+
+        Assertiva(s) de saída:
+        - Uma nova instância da classe `Localidade` é criada e retornada com seus atributos devidamente populados.
+
+        E) DESCRIÇÃO:
+        1. Este método é o construtor da classe `Localidade`.
+        2. Ele recebe todos os dados necessários para representar uma unidade.
+        3. Atribui cada parâmetro recebido a um atributo correspondente na instância (`self`). Por exemplo, `self.nome` recebe o valor do parâmetro `nome`.
+        4. Define o estado inicial do objeto no momento de sua criação.
+
+        F) HIPÓTESES:
+        - As classes `Estoque`, `Funcionario` e `Carrinho` estão definidas e importadas corretamente.
+        - A lógica que chama este construtor (como a função `adiciona_Unidade`) já validou os dados de entrada.
+
+        G) RESTRIÇÕES:
+        - O construtor não executa nenhuma lógica de validação interna; ele assume que os dados recebidos são válidos.
+        """    
         self.nome = nome
         self.codigo = codigo
         self.estoque = estoque
@@ -33,6 +85,40 @@ class Localidade:
         self.ativo = ativo
 
     def to_json(self):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: to_json()
+
+        B) OBJETIVO:
+        Converter (serializar) a instância atual do objeto `Localidade` em um dicionário Python, que pode ser facilmente convertido para o formato JSON.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: DICIONÁRIO SERIALIZÁVEL
+        Retorna um dicionário que representa o estado completo do objeto, incluindo seus objetos aninhados.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida da classe `Localidade`.
+        - Os objetos aninhados (em `self.estoque`, `self.funcionarios`, `self.vendas`) devem ter seus próprios métodos `to_json()`.
+
+        Assertiva(s) de saída:
+        - O dicionário retornado contém apenas tipos de dados primitivos (strings, números, booleanos, listas, dicionários), tornando-o compatível com JSON.
+
+        E) DESCRIÇÃO:
+        1. Cria um dicionário contendo os atributos de tipo primitivo da unidade: `nome`, `codigo`, `localizacao` e `ativo`.
+        2. Invoca o método `to_json()` do objeto `estoque` e armazena o resultado na chave "estoque".
+        3. Utiliza uma list comprehension para iterar sobre a lista de `funcionarios`, chamando o método `to_json()` para cada objeto `Funcionario` e criando uma lista de dicionários.
+        4. Realiza o mesmo processo para a lista de `vendas`, convertendo cada objeto `Carrinho` em um dicionário.
+        5. Retorna o dicionário completo e estruturado.
+
+        F) HIPÓTESES:
+        - As classes `Estoque`, `Funcionario` e `Carrinho` possuem um método `to_json()` implementado que serializa corretamente seus respectivos objetos.
+
+        G) RESTRIÇÕES:
+        - A estrutura do dicionário de saída é fixa. Se novos atributos forem adicionados à classe, este método precisará ser atualizado para incluí-los na serialização.
+        """    
         return {
             "nome": self.nome,
             "codigo": self.codigo,
@@ -43,9 +129,48 @@ class Localidade:
             "ativo": self.ativo
         }
 
-    @classmethod
+    @classmethod    
     def from_json(cls, data: dict):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: from_json()
 
+        B) OBJETIVO:
+        Criar uma nova instância da classe `Localidade` a partir de um dicionário (geralmente obtido pela desserialização de um JSON), reconstruindo o objeto e seus componentes.
+
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: data (dicionário)
+        Um dicionário contendo todos os dados necessários para recriar uma instância de `Localidade`.
+
+        RETORNO 1: INSTÂNCIA DE LOCALIDADE
+        Retorna uma nova instância da classe `Localidade` (`cls`), populada com os dados fornecidos.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `data` é um dicionário que contém as chaves necessárias ("nome", "codigo", "estoque", "funcionarios", "vendas", "localizacao").
+        - Os valores associados às chaves de objetos aninhados ("estoque", "funcionarios", "vendas") são representações de dicionário válidas para esses objetos.
+
+        Assertiva(s) de saída:
+        - Uma instância completa e funcional da classe `Localidade` é retornada.
+
+        E) DESCRIÇÃO:
+        1. Sendo um método de classe (`@classmethod`), ele opera sobre a classe (`cls`) em si, e não sobre uma instância.
+        2. Reconstrói o objeto `Estoque` chamando o método de classe `Estoque.from_json()`.
+        3. Reconstrói a lista de funcionários iterando sobre os dados em `data["funcionarios"]` e chamando `Funcionario.from_json()` para cada item.
+        4. Reconstrói a lista de vendas de forma análoga, usando `Carrinho.from_json()`.
+        5. Invoca o construtor da própria classe (`cls(...)`), passando os dados primitivos extraídos do dicionário (`nome`, `codigo`) e os objetos complexos recém-criados (`estoque`, `funcionarios`, `vendas`).
+        6. Garante que `localizacao` seja uma tupla.
+        7. Usa `data.get("ativo", True)` para obter o status, mantendo a compatibilidade com arquivos JSON mais antigos que possam não ter essa chave.
+        8. Retorna a nova instância criada.
+
+        F) HIPÓTESES:
+        - As classes `Estoque`, `Funcionario` e `Carrinho` possuem um método de classe `from_json()` capaz de recriar suas instâncias a partir de um dicionário.
+        - A estrutura e as chaves do dicionário `data` correspondem exatamente ao que o método espera.
+
+        G) RESTRIÇÕES:
+        - O método levantará uma exceção `KeyError` se uma chave obrigatória (como "nome" ou "estoque") estiver faltando no dicionário `data`.
+        - Não há validação interna sobre os tipos ou valores dos dados dentro do dicionário `data`.
+        """
         estoque = Estoque.from_json(data["estoque"])
         funcionarios = [Funcionario.from_json(f) for f in data["funcionarios"]]
         vendas = [Carrinho.from_json(v) for v in data["vendas"]]
