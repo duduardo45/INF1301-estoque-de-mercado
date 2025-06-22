@@ -19,13 +19,44 @@ class Estoque:
 
     def __init__(self, codigo: str, estoque: dict = None, exposicao: dict = None, capacidades: dict = None):
         """
-        Inicializa um objeto Estoque com dicionários para controle de quantidade e capacidade.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __init__()
 
-        Args:
-            codigo (str): identificador único do estoque
+        B) OBJETIVO:
+        Inicializar uma nova instância da classe Estoque, estabelecendo seu identificador único e suas estruturas de dados internas para controle de produtos.
 
-        Returns:
-            None
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: codigo (string)
+        O identificador único para o estoque (ex: "EST-01").
+        PARÂMETRO 2: estoque (dicionário, opcional)
+        Dicionário para rastrear as quantidades de produtos no armazenamento interno.
+        PARÂMETRO 3: exposicao (dicionário, opcional)
+        Dicionário para rastrear as quantidades de produtos na área de exposição (prateleiras).
+        PARÂMETRO 4: capacidades (dicionário, opcional)
+        Dicionário para definir as capacidades máximas de cada produto no estoque e na exposição.
+
+        RETORNO: Nenhum (é um método construtor).
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `codigo` é uma string.
+        - Os demais parâmetros, se fornecidos, são dicionários.
+
+        Assertiva(s) de saída:
+        - Uma nova instância da classe `Estoque` é criada com seus atributos definidos, garantindo que os dicionários de controle nunca sejam nulos.
+
+        E) DESCRIÇÃO:
+        1. Este método é o construtor da classe.
+        2. Atribui o `codigo` recebido ao atributo `self.codigo`.
+        3. Para cada um dos parâmetros de dicionário (`estoque`, `exposicao`, `capacidades`), ele verifica se foi fornecido um valor.
+        4. Se um parâmetro for `None`, ele inicializa o atributo correspondente como um dicionário vazio para evitar erros em operações futuras.
+        5. Se um valor for fornecido, ele é atribuído diretamente.
+
+        F) HIPÓTESES:
+        - A validação da unicidade e do formato do `codigo` é feita pela função que chama este construtor (ex: `registrar_estoque`).
+
+        G) RESTRIÇÕES:
+        - O construtor não realiza validações profundas nos dicionários recebidos; ele assume que, se fornecidos, estão em um formato coerente.
         """
 
         if estoque is None:
@@ -44,10 +75,37 @@ class Estoque:
 
     def __str__(self):
         """
-        Retorna uma representação legível do estoque.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __str__()
 
-        Returns:
-            str: descrição do estoque
+        B) OBJETIVO:
+        Fornecer uma representação textual e legível do estado atual do estoque, incluindo totais de itens e listas de produtos em falta.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: Uma string formatada contendo um resumo do estado do estoque.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Estoque`.
+        - As chaves dos dicionários `self.estoque` e `self.exposicao` são objetos `Produto` que possuem um atributo `codigo`.
+
+        Assertiva(s) de saída:
+        - Retorna uma string que pode ser de múltiplas linhas.
+
+        E) DESCRIÇÃO:
+        1. Calcula a soma total de unidades de produtos no estoque interno e na área de exposição.
+        2. Identifica os produtos com quantidade zero (em falta) tanto no estoque interno quanto na exposição, coletando seus códigos.
+        3. Monta uma string de descrição inicial com o código do estoque, o número total de produtos diferentes registrados e os totais de unidades.
+        4. Se houver produtos em falta em qualquer um dos locais, anexa listas formatadas desses produtos à string de descrição.
+        5. Retorna a string final, removendo quaisquer espaços em branco extras no final.
+
+        F) HIPÓTESES:
+        - A estrutura de dados interna do estoque está consistente (todos os produtos em `estoque` e `exposicao` também estão em `capacidades`).
+
+        G) RESTRIÇÕES:
+        - A representação dos produtos em falta é limitada aos seus códigos, não mostrando o nome completo.
         """
         total_estoque = sum(self.estoque.values())
         total_exposicao = sum(self.exposicao.values())
@@ -70,6 +128,39 @@ class Estoque:
 
 
     def to_json(self):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: to_json()
+
+        B) OBJETIVO:
+        Serializar a instância do `Estoque` para um dicionário Python, convertendo os objetos `Produto` (usados como chaves) em seus códigos de string para torná-lo compatível com o formato JSON.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: Um dicionário com os dados do estoque, pronto para ser serializado para JSON.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Estoque`.
+        - As chaves dos dicionários `estoque`, `exposicao` e `capacidades` são objetos `Produto` que possuem um atributo `codigo`.
+
+        Assertiva(s) de saída:
+        - Retorna um dicionário onde todas as chaves e valores são tipos primitivos (strings, números, dicionários).
+
+        E) DESCRIÇÃO:
+        1. Inicia a criação de um dicionário de resultado com o `codigo` do estoque.
+        2. Utiliza "dictionary comprehensions" para transformar os dicionários internos:
+           a. Para `estoque` e `exposicao`, o novo dicionário usará o `produto.codigo` como chave e a quantidade como valor.
+           b. Para `capacidades`, o novo dicionário usará o `produto.codigo` como chave e um dicionário com as capacidades como valor.
+        3. Retorna o dicionário completo e formatado para JSON.
+
+        F) HIPÓTESES:
+        - A estrutura de dados interna está consistente.
+
+        G) RESTRIÇÕES:
+        - A estrutura do dicionário de saída é fixa. Qualquer alteração na classe pode exigir uma atualização neste método.
+        """        
         return {
             "codigo": self.codigo,
             "estoque": {p.codigo: qtd for p, qtd in self.estoque.items()},
@@ -82,6 +173,44 @@ class Estoque:
 
     @classmethod
     def from_json(cls, data: dict):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: from_json()
+
+        B) OBJETIVO:
+        Criar (desserializar) uma instância da classe `Estoque` a partir de um dicionário, recriando a estrutura interna com objetos `Produto` reais ao invés de apenas seus códigos.
+
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: data (dicionário)
+        Dicionário com os dados do estoque, onde os produtos são representados por seus códigos.
+
+        RETORNO 1: Uma nova instância da classe `Estoque`.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `data` é um dicionário com a estrutura gerada por `to_json`.
+        - Os códigos de produto presentes em `data` devem corresponder a produtos existentes no sistema, que possam ser consultados.
+
+        Assertiva(s) de saída:
+        - Retorna uma instância de `Estoque` cujos dicionários internos usam objetos `Produto` como chaves.
+
+        E) DESCRIÇÃO:
+        1. Realiza uma importação local da função `consultar_produto_por_codigo` para evitar problemas de importação circular.
+        2. Cria uma instância de `Estoque` preliminar, apenas com o código.
+        3. Itera sobre os códigos de produto encontrados no dicionário `data["capacidades"]`.
+        4. Para cada código, utiliza `consultar_produto_por_codigo` para obter o objeto `Produto` completo correspondente.
+        5. Se um produto não for encontrado, lança uma exceção `ValueError`, interrompendo o carregamento.
+        6. Usa o objeto `Produto` recuperado como a chave para popular os dicionários `capacidades`, `estoque` e `exposicao` da nova instância.
+        7. Retorna a instância de `Estoque` completamente populada.
+
+        F) HIPÓTESES:
+        - O módulo de produtos e seus dados já foram carregados no sistema antes da execução desta função.
+        - A função `consultar_produto_por_codigo` está disponível e funciona como esperado.
+
+        G) RESTRIÇÕES:
+        - O processo de carregamento de estoques depende criticamente do carregamento prévio dos produtos.
+        - Lança uma exceção não tratada se um código de produto no JSON não existir, o que pode interromper a inicialização do sistema.
+        """    
         from modulos.produto import consultar_produto_por_codigo
 
         estoque = cls(codigo=data["codigo"])
@@ -839,6 +968,42 @@ class Estoque:
 
 
 def salvar_estoques():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: salvar_estoques()
+
+    B) OBJETIVO:
+    Persistir em um arquivo JSON o estado atual de todos os estoques registrados no sistema e que estão armazenados na memória.
+
+    C) ACOPLAMENTO:
+    PARÂMETROS: Nenhum.
+
+    RETORNO: Nenhum valor explícito. A função realiza uma operação de escrita em arquivo.
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O dicionário global `_todos_estoques` contém instâncias da classe `Estoque`.
+
+    Assertiva(s) de saída:
+    - O arquivo definido pela constante `ESTOQUES_JSON` é criado ou sobrescrito com os dados de todos os estoques.
+
+    E) DESCRIÇÃO:
+    1. Inicializa um dicionário vazio `json_estoques`.
+    2. Itera sobre cada par de código-estoque no dicionário global `_todos_estoques`.
+    3. Para cada objeto de estoque, invoca seu método `to_json()` para obter sua representação em dicionário serializável.
+    4. Adiciona este dicionário ao `json_estoques`, usando o código do estoque como chave.
+    5. Abre o arquivo de destino em modo de escrita ("w") com codificação "utf-8".
+    6. Utiliza a função `json.dump()` para escrever o conteúdo do dicionário `json_estoques` no arquivo, com formatação indentada para legibilidade.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_estoques` para armazenamento em memória.
+    - A constante `ESTOQUES_JSON` contém um caminho de arquivo válido e com permissão de escrita.
+    - Cada objeto `Estoque` possui um método `to_json()` funcional.
+
+    G) RESTRIÇÕES:
+    - A função sobrescreve completamente o arquivo de destino sem criar backups ou avisos.
+    - Possíveis erros de I/O (ex: disco cheio, permissão negada) não são tratados internamente e podem interromper o programa.
+    """
     json_estoques = {}
 
     for codigo, estoque in _todos_estoques.items():
@@ -848,6 +1013,41 @@ def salvar_estoques():
         json.dump(json_estoques, f, ensure_ascii=False, indent=4)
 
 def carregar_estoques():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: carregar_estoques()
+
+    B) OBJETIVO:
+    Ler os dados de estoques de um arquivo JSON e carregá-los para a memória, populando o dicionário global `_todos_estoques`.
+
+    C) ACOPLAMENTO:
+    PARÂMETROS: Nenhum.
+
+    RETORNO: Nenhum valor explícito. A função modifica o estado do dicionário global `_todos_estoques`.
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O arquivo especificado pela constante `ESTOQUES_JSON` deve existir.
+    - O conteúdo do arquivo deve ser um JSON válido que represente um dicionário de estoques.
+    - Todos os produtos referenciados nos dados dos estoques já devem ter sido carregados no sistema.
+
+    Assertiva(s) de saída:
+    - O dicionário global `_todos_estoques` é preenchido com as instâncias de `Estoque` recriadas a partir dos dados do arquivo.
+
+    E) DESCRIÇÃO:
+    1. Utiliza um bloco `try-except` para tratar o caso de o arquivo não existir (`FileNotFoundError`), retornando silenciosamente se for o caso.
+    2. Se o arquivo existir, ele é aberto e seu conteúdo JSON é carregado para um dicionário `json_estoques`.
+    3. Itera sobre cada par de código-dados no dicionário carregado.
+    4. Para cada item, invoca o método de classe `Estoque.from_json()` para criar uma nova instância de `Estoque`.
+    5. Armazena a instância recém-criada no dicionário global `_todos_estoques`, usando o código como chave.
+
+    F) HIPÓTESES:
+    - A função `carregar_produtos` foi executada antes desta para garantir que os produtos possam ser encontrados.
+    - A classe `Estoque` implementa um método de classe `from_json()` funcional.
+
+    G) RESTRIÇÕES:
+    - A função não trata exceções que podem ser levantadas por `Estoque.from_json` (como `ValueError`, `KeyError`), o que pode interromper o processo de carregamento se o arquivo de dados estiver inconsistente.
+    """
     try:
         with open(ESTOQUES_JSON, "r", encoding="utf-8") as f:
             json_estoques = json.load(f)

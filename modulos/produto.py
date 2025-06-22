@@ -21,19 +21,47 @@ __all__ = [
 class Produto:
     def __init__(self, nome: str, marca: str, categoria: str, codigo: str, peso: float, preco: float, preco_por_peso: float = None):
         """
-        Inicializa um objeto Produto.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __init__()
 
-        Args:
-            nome (str): nome do produto
-            marca (str): marca do produto
-            categoria (str): categoria do produto
-            codigo (str): código de barras do produto (EAN-13)
-            peso (float): peso do produto em unidades apropriadas
-            preco (float): preço unitário do produto
-            preco_por_peso (float, opcional): preço por unidade de peso, se aplicável
+        B) OBJETIVO:
+        Inicializar uma nova instância da classe Produto, atribuindo todos os dados essenciais que caracterizam um produto.
 
-        Returns:
-            None
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: nome (string)
+        Nome do produto.
+        PARÂMETRO 2: marca (string)
+        Marca do produto.
+        PARÂMETRO 3: categoria (string)
+        Categoria à qual o produto pertence.
+        PARÂMETRO 4: codigo (string)
+        Código de barras EAN-13 do produto.
+        PARÂMETRO 5: peso (float)
+        Peso do produto na unidade correspondente.
+        PARÂMETRO 6: preco (float)
+        Preço por unidade do produto.
+        PARÂMETRO 7: preco_por_peso (float, opcional)
+        Preço por unidade de peso (ex: preço/kg), se aplicável.
+
+        RETORNO: Nenhum (é um método construtor).
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - Os parâmetros são fornecidos com os tipos de dados corretos.
+
+        Assertiva(s) de saída:
+        - Uma nova instância da classe `Produto` é criada com todos os seus atributos definidos.
+
+        E) DESCRIÇÃO:
+        1. Este método é o construtor da classe `Produto`.
+        2. Ele recebe todos os dados necessários para representar um produto.
+        3. Atribui cada parâmetro recebido a um atributo correspondente na instância (`self`), definindo o estado inicial do objeto.
+
+        F) HIPÓTESES:
+        - A validação da integridade e formato dos dados (como a validação do código de barras) é realizada antes da invocação deste construtor.
+
+        G) RESTRIÇÕES:
+        - O construtor não realiza nenhuma validação interna dos dados; ele confia que os valores recebidos são corretos e válidos.
         """
         self.nome = nome
         self.marca = marca
@@ -45,10 +73,38 @@ class Produto:
 
     def __str__(self, quantidade:float=None):
         """
-        Retorna uma representação em string amigável do objeto Produto.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: __str__()
 
-        Returns:
-            str: descrição resumida do produto
+        B) OBJETIVO:
+        Fornecer uma representação textual legível de uma instância do produto, adaptando os detalhes exibidos com base na presença de uma quantidade.
+
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: quantidade (float, opcional)
+        Se fornecido, a string de retorno incluirá a quantidade e o subtotal. Caso contrário, exibirá o preço padrão.
+
+        RETORNO 1: Uma string formatada descrevendo o produto.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Produto`.
+        - `quantidade`, se fornecida, é um valor numérico.
+
+        Assertiva(s) de saída:
+        - Retorna uma string única com os detalhes do produto concatenados.
+
+        E) DESCRIÇÃO:
+        1. Inicia uma lista de strings com as informações básicas: nome, marca, categoria e código.
+        2. Verifica se o parâmetro `quantidade` foi fornecido.
+        3. Se `quantidade` for nulo, a lista é preenchida com o peso e o preço (unitário ou por peso, conforme aplicável).
+        4. Se `quantidade` for um número, a lista é preenchida com a quantidade e o subtotal, calculado através do método `calcula_preco`.
+        5. Concatena todos os itens da lista em uma única string, separados por " | ", e a retorna.
+
+        F) HIPÓTESES:
+        - O método `calcula_preco` está implementado e retorna um dicionário com o preço calculado na chave "dados".
+
+        G) RESTRIÇÕES:
+        - A formatação do preço e do subtotal está fixa para duas casas decimais.
         """
         partes = [
             f"Produto: {self.nome}",
@@ -73,6 +129,37 @@ class Produto:
 
 
     def to_json(self):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: to_json()
+
+        B) OBJETIVO:
+        Converter (serializar) a instância do objeto `Produto` em um dicionário Python, adequado para a persistência em formato JSON.
+
+        C) ACOPLAMENTO:
+        PARÂMETROS: Nenhum.
+
+        RETORNO 1: DICIONÁRIO SERIALIZÁVEL
+        Um dicionário contendo os atributos da instância como pares de chave-valor.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Produto`.
+
+        Assertiva(s) de saída:
+        - O dicionário retornado contém apenas tipos de dados primitivos, compatíveis com a serialização JSON.
+
+        E) DESCRIÇÃO:
+        1. Cria um dicionário.
+        2. Mapeia cada atributo da instância (`self.nome`, `self.marca`, etc.) para uma chave correspondente no dicionário.
+        3. Retorna o dicionário populado com todos os dados do produto.
+
+        F) HIPÓTESES:
+        - Todos os atributos do objeto são de tipos diretamente serializáveis para JSON (string, número, booleano, None).
+
+        G) RESTRIÇÕES:
+        - Se novos atributos forem adicionados à classe `Produto`, este método precisará ser atualizado para incluí-los na serialização.
+        """        
         return {
             "nome": self.nome,
             "marca": self.marca,
@@ -87,6 +174,40 @@ class Produto:
 
     @classmethod
     def from_json(cls, json_dict):
+        """
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: from_json()
+
+        B) OBJETIVO:
+        Criar uma nova instância da classe `Produto` a partir de um dicionário (geralmente desserializado de um arquivo JSON).
+
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: json_dict (dicionário)
+        Um dicionário contendo os dados do produto.
+
+        RETORNO 1: Uma nova instância da classe `Produto`.
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `json_dict` é um dicionário que contém as chaves obrigatórias ("nome", "marca", "categoria", "codigo", "peso", "preco").
+
+        Assertiva(s) de saída:
+        - Uma instância completa e funcional da classe `Produto` é retornada.
+
+        E) DESCRIÇÃO:
+        1. É um método de classe, operando sobre a classe (`cls`) em vez de uma instância.
+        2. Extrai os valores para `nome`, `marca`, `categoria`, `codigo`, `peso` e `preco` diretamente do dicionário.
+        3. Utiliza `json_dict.get("preco_por_peso", None)` para obter o preço por peso, tratando o caso em que a chave pode não existir.
+        4. Invoca o construtor da classe (`cls(...)`) com todos os valores extraídos.
+        5. Retorna a nova instância criada.
+
+        F) HIPÓTESES:
+        - A estrutura do dicionário `json_dict` é consistente com a esperada, contendo as chaves necessárias.
+
+        G) RESTRIÇÕES:
+        - Se uma chave obrigatória (ex: "nome") estiver ausente no dicionário, uma exceção `KeyError` será levantada.
+        - Não há validação interna dos tipos de dados dos valores no dicionário.
+        """        
         nome = json_dict["nome"]
         marca = json_dict["marca"]
         categoria = json_dict["categoria"]
@@ -100,14 +221,42 @@ class Produto:
 
     def calcula_preco(self, quantidade):
         """
-        Calcula o preço total para uma dada quantidade do produto.
+        ESPECIFICAÇÃO DE FUNÇÃO:
+        A) NOME: calcula_preco()
 
-        Args:
-            quantidade (float): quantidade desejada para cálculo do preço
+        B) OBJETIVO:
+        Calcular o preço total para uma quantidade específica de um produto, tratando corretamente produtos com preço unitário e produtos com preço por peso.
 
-        Retorna:
-            0 -> preço calculado com sucesso, valor disponível em 'dados'
-            1 -> quantidade inválida (menor ou igual a zero)
+        C) ACOPLAMENTO:
+        PARÂMETRO 1: quantidade (float)
+        A quantidade do produto para a qual o preço total será calculado.
+
+        RETORNO 1: DICIONÁRIO DE ERRO POR QUANTIDADE INVÁLIDA:
+        {"retorno": 1, "mensagem": "Quantidade deve ser maior que zero."}
+
+        RETORNO 2: DICIONÁRIO DE SUCESSO:
+        {"retorno": 0, "mensagem": "Preço calculado com sucesso.", "dados": <preco_total>}
+
+        D) CONDIÇÕES DE ACOPLAMENTO:
+        Assertiva(s) de entrada:
+        - `self` é uma instância válida de `Produto`.
+        - `quantidade` é um valor numérico.
+
+        Assertiva(s) de saída:
+        - O retorno é um dicionário com as chaves "retorno", "mensagem" e, em caso de sucesso, "dados" contendo o preço total.
+
+        E) DESCRIÇÃO:
+        1. Valida se a `quantidade` fornecida é maior que zero. Se não for, retorna um dicionário de erro.
+        2. Verifica se o atributo `preco_por_peso` da instância é nulo.
+        3. Se for nulo, o cálculo é feito multiplicando o preço unitário (`self.preco`) pela `quantidade`.
+        4. Se `preco_por_peso` tiver um valor, o cálculo é feito multiplicando este valor pela `quantidade`.
+        5. Retorna um dicionário de sucesso com o preço total calculado no campo "dados".
+
+        F) HIPÓTESES:
+        - Os atributos `preco` e `preco_por_peso` da instância são valores numéricos válidos para cálculo.
+
+        G) RESTRIÇÕES:
+        - A função assume que a `quantidade` está na unidade correta para o tipo de preço (unidades para preço unitário, peso para preço por peso).
         """
         if quantidade <= 0:
             return {"retorno": 1, "mensagem": "Quantidade deve ser maior que zero."}
@@ -122,6 +271,43 @@ class Produto:
 
 
 def salvar_produtos():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: salvar_produtos()
+
+    B) OBJETIVO:
+    Persistir o estado atual de todos os produtos, que estão armazenados na memória, em um arquivo no formato JSON.
+
+    C) ACOPLAMENTO:
+    PARÂMETROS: Nenhum.
+
+    RETORNO: Nenhum valor explícito é retornado. A função realiza uma operação de I/O, escrevendo em um arquivo.
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O dicionário global `_todos_produtos` está inicializado e contém instâncias da classe `Produto`.
+
+    Assertiva(s) de saída:
+    - Um arquivo JSON, localizado no caminho definido pela constante `PRODUTOS_JSON`, é criado ou sobrescrito com os dados dos produtos.
+
+    E) DESCRIÇÃO:
+    1. Inicializa um dicionário vazio `json_produtos`.
+    2. Itera sobre cada par de código-produto no dicionário global `_todos_produtos`.
+    3. Para cada objeto de produto, invoca seu método `to_json()` para obter sua representação em dicionário.
+    4. Adiciona este dicionário ao `json_produtos`, usando o código do produto como chave.
+    5. Abre o arquivo de destino em modo de escrita ("w") e com codificação "utf-8".
+    6. Utiliza a função `json.dump()` para escrever o conteúdo do dicionário `json_produtos` no arquivo, com formatação indentada.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_produtos` para armazenamento em memória.
+    - A constante `PRODUTOS_JSON` contém um caminho de arquivo válido.
+    - Cada objeto em `_todos_produtos` possui um método `to_json()` funcional.
+    - O programa tem permissão de escrita no diretório de destino.
+
+    G) RESTRIÇÕES:
+    - A função sobrescreve o arquivo de destino sem aviso ou backup.
+    - Possíveis erros de I/O (ex: disco cheio) não são tratados e podem interromper o programa.
+    """
     json_produtos = {}
 
     for codigo, p in _todos_produtos.items():
@@ -131,6 +317,43 @@ def salvar_produtos():
         json.dump(json_produtos, f, ensure_ascii=False, indent=4)
 
 def carregar_produtos():
+    """
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: carregar_produtos()
+
+    B) OBJETIVO:
+    Ler os dados de produtos de um arquivo JSON e carregá-los para a memória, populando o dicionário global `_todos_produtos`.
+
+    C) ACOPLAMENTO:
+    PARÂMETROS: Nenhum.
+
+    RETORNO: Nenhum valor explícito é retornado. A função modifica o estado do dicionário global `_todos_produtos`.
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O arquivo especificado pela constante `PRODUTOS_JSON` deve existir.
+    - O conteúdo do arquivo deve ser um JSON válido que represente um dicionário de produtos.
+
+    Assertiva(s) de saída:
+    - O dicionário global `_todos_produtos` é preenchido com as instâncias de `Produto` recriadas a partir dos dados do arquivo.
+
+    E) DESCRIÇÃO:
+    1. Utiliza um bloco `try-except` para lidar com a possível ausência do arquivo.
+    2. Tenta abrir o arquivo definido em `PRODUTOS_JSON` em modo de leitura ("r").
+    3. Caso o arquivo não exista (`FileNotFoundError`), a função termina sua execução silenciosamente.
+    4. Se o arquivo for aberto com sucesso, utiliza `json.load()` para desserializar seu conteúdo.
+    5. Itera sobre cada par de código-produto no dicionário lido do arquivo.
+    6. Para cada item, invoca o método de classe `Produto.from_json()` para criar uma nova instância do objeto.
+    7. Armazena a instância recém-criada no dicionário global `_todos_produtos`, usando o código como chave.
+
+    F) HIPÓTESES:
+    - Existe um dicionário global `_todos_produtos` para ser populado.
+    - A constante `PRODUTOS_JSON` aponta para o caminho correto do arquivo.
+    - A classe `Produto` implementa um método de classe `from_json()` funcional.
+
+    G) RESTRIÇÕES:
+    - A função não trata erros de formatação no JSON (`JSONDecodeError`) ou de chaves ausentes (`KeyError`), que podem interromper o carregamento.
+    """
     try:
         with open(PRODUTOS_JSON, "r", encoding="utf-8") as f:
             json_produtos = json.load(f)
@@ -144,13 +367,42 @@ def carregar_produtos():
 
 def _valida_codigo_barras(codigo: str):
     """
-    Valida um código de barras EAN-13 representado como string.
+    ESPECIFICAÇÃO DE FUNÇÃO:
+    A) NOME: _valida_codigo_barras()
 
-    Args:
-        codigo (str): código de barras com 13 dígitos
+    B) OBJETIVO:
+    Validar a integridade de um código de barras no padrão EAN-13, verificando seu formato e o dígito verificador.
 
-    Returns:
-        bool: True se válido, False se inválido
+    C) ACOPLAMENTO:
+    PARÂMETRO 1: codigo (string)
+    A string de 13 dígitos do código de barras a ser validado.
+
+    RETORNO 1: Booleano (`True` se o código for válido, `False` caso contrário).
+
+    D) CONDIÇÕES DE ACOPLAMENTO:
+    Assertiva(s) de entrada:
+    - O parâmetro `codigo` é do tipo string.
+
+    Assertiva(s) de saída:
+    - O retorno é estritamente `True` ou `False`.
+
+    E) DESCRIÇÃO:
+    1. Verifica se o `codigo` é uma string, se tem o comprimento de 13 caracteres e se contém apenas dígitos. Se qualquer uma dessas condições falhar, retorna `False`.
+    2. Converte a string do código em uma lista de inteiros.
+    3. Aplica o algoritmo de soma do EAN-13:
+        a. Soma os dígitos nas posições 0, 2, 4, 6, 8, 10.
+        b. Soma os dígitos nas posições 1, 3, 5, 7, 9, 11 e multiplica o resultado por 3.
+    4. Soma os dois totais obtidos.
+    5. Calcula o dígito verificador: `(10 - (soma_total % 10)) % 10`.
+    6. Compara o dígito verificador calculado com o último dígito do código de barras original (`numeros[-1]`).
+    7. Retorna `True` se forem iguais, e `False` caso contrário.
+
+    F) HIPÓTESES:
+    - O algoritmo de cálculo do dígito verificador está corretamente implementado para o padrão EAN-13.
+
+    G) RESTRIÇÕES:
+    - Esta função valida exclusivamente o formato EAN-13 e não serve para outros tipos de códigos de barras.
+    - Sendo uma função "privada" (prefixo `_`), seu uso é destinado apenas a este módulo.
     """
     if not isinstance(codigo, str):
         return False
