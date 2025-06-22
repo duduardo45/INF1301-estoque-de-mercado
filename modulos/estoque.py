@@ -35,8 +35,8 @@ class Estoque:
         total_estoque = sum(self.estoque.values())
         total_exposicao = sum(self.exposicao.values())
 
-        faltas_estoque = [codigo for codigo, qtd in self.estoque.items() if qtd == 0]
-        faltas_exposicao = [codigo for codigo, qtd in self.exposicao.items() if qtd == 0]
+        faltas_estoque = [p.codigo for p, qtd in self.estoque.items() if qtd == 0]
+        faltas_exposicao = [p.codigo for p, qtd in self.exposicao.items() if qtd == 0]
 
         descricao = f"Estoque: '{self.codigo}'\n"
         descricao += f"Produtos registrados: {len(self.capacidades)}\n"
@@ -98,13 +98,12 @@ class Estoque:
         G) RESTRIÇÕES:
         - A função modifica o estado interno do objeto `Estoque`.
         """
-        codigo = produto.codigo
-        if codigo in self.capacidades:
+        if produto in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto já está registrado."}
 
-        self.estoque[codigo] = 0
-        self.exposicao[codigo] = 0
-        self.capacidades[codigo] = {
+        self.estoque[produto] = 0
+        self.exposicao[produto] = 0
+        self.capacidades[produto] = {
             "estoque": capacidade_estoque,
             "exposicao": capacidade_exposicao
         }
@@ -112,7 +111,7 @@ class Estoque:
 
 
 
-    def remover_produto(self, codigo):
+    def remover_produto(self, produto):
         """
         ESPECIFICAÇÃO DE FUNÇÃO:
         A) NOME: remover_produto() (Método de Estoque)
@@ -154,15 +153,15 @@ class Estoque:
         G) RESTRIÇÕES:
         - A remoção é bloqueada para evitar a perda de registros de produtos que ainda existem fisicamente.
         """
-        if codigo not in self.capacidades:
+        if produto not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não encontrado."}
 
-        if self.estoque.get(codigo, 0) > 0 or self.exposicao.get(codigo, 0) > 0:
+        if self.estoque.get(produto, 0) > 0 or self.exposicao.get(produto, 0) > 0:
             return {"retorno": 2, "mensagem": "Produto ainda possui quantidades em estoque ou exposição."}
 
-        self.estoque.pop(codigo, None)
-        self.exposicao.pop(codigo, None)
-        self.capacidades.pop(codigo, None)
+        self.estoque.pop(produto, None)
+        self.exposicao.pop(produto, None)
+        self.capacidades.pop(produto, None)
 
         return {"retorno": 0, "mensagem": "Produto removido com sucesso."}
 
@@ -211,16 +210,16 @@ class Estoque:
         if tipo not in ('estoque', 'exposicao', 'ambos'):
             return {"retorno": 2, "mensagem": "Tipo inválido. Use 'estoque', 'exposicao' ou 'ambos'."}
 
-        for codigo in self.capacidades:
-            em_estoque = self.estoque[codigo] == 0
-            em_exposicao = self.exposicao[codigo] == 0
+        for produto in self.capacidades:
+            em_estoque = self.estoque[produto] == 0
+            em_exposicao = self.exposicao[produto] == 0
 
             if tipo == 'estoque' and em_estoque:
-                faltando.append(codigo)
+                faltando.append(produto.codigo)
             elif tipo == 'exposicao' and em_exposicao:
-                faltando.append(codigo)
+                faltando.append(produto.codigo)
             elif tipo == 'ambos' and (em_estoque or em_exposicao):
-                faltando.append(codigo)
+                faltando.append(produto.codigo)
 
         return {
             "retorno": 0,
@@ -230,7 +229,7 @@ class Estoque:
 
 
 
-    def percentual_ocupado(self, codigo):
+    def percentual_ocupado(self, produto):
         """
         ESPECIFICAÇÃO DE FUNÇÃO:
         A) NOME: percentual_ocupado() (Método de Estoque)
@@ -268,12 +267,12 @@ class Estoque:
         G) RESTRIÇÕES:
         - Nenhuma.
         """
-        if codigo not in self.capacidades:
+        if produto not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado."}
 
-        cap = self.capacidades[codigo]
-        ocup_estoque = (self.estoque[codigo] / cap["estoque"]) * 100 if cap["estoque"] else 0
-        ocup_exposicao = (self.exposicao[codigo] / cap["exposicao"]) * 100 if cap["exposicao"] else 0
+        cap = self.capacidades[produto]
+        ocup_estoque = (self.estoque[produto] / cap["estoque"]) * 100 if cap["estoque"] else 0
+        ocup_exposicao = (self.exposicao[produto] / cap["exposicao"]) * 100 if cap["exposicao"] else 0
 
         return {
             "retorno": 0,
@@ -321,17 +320,17 @@ class Estoque:
         - Nenhuma.
         """
         produtos = []
-        for codigo in self.capacidades:
+        for produto in self.capacidades:
             if detalhado:
                 produtos.append({
-                    "codigo": codigo,
-                    "estoque": self.estoque[codigo],
-                    "exposicao": self.exposicao[codigo],
-                    "capacidade_estoque": self.capacidades[codigo]["estoque"],
-                    "capacidade_exposicao": self.capacidades[codigo]["exposicao"]
+                    "codigo": produto.codigo,
+                    "estoque": self.estoque[produto],
+                    "exposicao": self.exposicao[produto],
+                    "capacidade_estoque": self.capacidades[produto]["estoque"],
+                    "capacidade_exposicao": self.capacidades[produto]["exposicao"]
                 })
             else:
-                produtos.append(codigo)
+                produtos.append(produto.codigo)
 
         return {
             "retorno": 0,
@@ -341,7 +340,7 @@ class Estoque:
 
 
 
-    def atualizar_capacidades(self, codigo, capacidade_estoque=None, capacidade_exposicao=None):
+    def atualizar_capacidades(self, produto, capacidade_estoque=None, capacidade_exposicao=None):
         """
         ESPECIFICAÇÃO DE FUNÇÃO:
         A) NOME: atualizar_capacidades() (Método de Estoque)
@@ -388,17 +387,17 @@ class Estoque:
         G) RESTRIÇÕES:
         - A função permite que a nova capacidade seja menor que a quantidade atual de produtos, o que pode criar uma inconsistência a ser tratada por outra função (`verificar_consistencia`).
         """
-        if codigo not in self.capacidades:
+        if produto not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado no estoque."}
 
         if capacidade_estoque is None and capacidade_exposicao is None:
             return {"retorno": 2, "mensagem": "Por favor especifique alguma capacidade a atualizar."}
 
         if capacidade_estoque is not None:
-            self.capacidades[codigo]["estoque"] = capacidade_estoque
+            self.capacidades[produto]["estoque"] = capacidade_estoque
 
         if capacidade_exposicao is not None:
-            self.capacidades[codigo]["exposicao"] = capacidade_exposicao
+            self.capacidades[produto]["exposicao"] = capacidade_exposicao
 
         return {"retorno": 0, "mensagem": "Capacidades atualizadas com sucesso."}
 
@@ -462,29 +461,28 @@ class Estoque:
         G) RESTRIÇÕES:
         - A função não permite adicionar produtos além da capacidade definida.
         """
-        codigo = produto.codigo
-        if codigo not in self.capacidades:
+        if produto not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado."}
 
-        if codigo not in self.estoque:
-            self.estoque[codigo] = 0
-        if codigo not in self.exposicao:
-            self.exposicao[codigo] = 0
+        if produto not in self.estoque:
+            self.estoque[produto] = 0
+        if produto not in self.exposicao:
+            self.exposicao[produto] = 0
 
         if destino == 'estoque':
-            atual = self.estoque[codigo]
-            limite = self.capacidades[codigo]["estoque"]
+            atual = self.estoque[produto]
+            limite = self.capacidades[produto]["estoque"]
             if atual + quantidade > limite:
                 return {"retorno": 2, "mensagem": "Capacidade de estoque excedida para o produto."}
-            self.estoque[codigo] += quantidade
+            self.estoque[produto] += quantidade
             return {"retorno": 0, "mensagem": "Produto adicionado ao estoque interno."}
 
         elif destino == 'exposicao':
-            atual = self.exposicao[codigo]
-            limite = self.capacidades[codigo]["exposicao"]
+            atual = self.exposicao[produto]
+            limite = self.capacidades[produto]["exposicao"]
             if atual + quantidade > limite:
                 return {"retorno": 3, "mensagem": "Capacidade de exposição excedida para o produto."}
-            self.exposicao[codigo] += quantidade
+            self.exposicao[produto] += quantidade
             return {"retorno": 0, "mensagem": "Produto adicionado à exposição."}
 
         else:
@@ -541,16 +539,15 @@ class Estoque:
         G) RESTRIÇÕES:
         - Nenhuma.
         """
-        codigo = produto.codigo
-        if codigo not in self.capacidades:
+        if produto not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado."}
-        if self.estoque[codigo] < quantidade:
+        if self.estoque[produto] < quantidade:
             return {"retorno": 2, "mensagem": "Estoque insuficiente para movimentação."}
-        if self.exposicao[codigo] + quantidade > self.capacidades[codigo]["exposicao"]:
+        if self.exposicao[produto] + quantidade > self.capacidades[produto]["exposicao"]:
             return {"retorno": 3, "mensagem": "Capacidade de exposição excedida para o produto."}
 
-        self.estoque[codigo] -= quantidade
-        self.exposicao[codigo] += quantidade
+        self.estoque[produto] -= quantidade
+        self.exposicao[produto] += quantidade
         return {"retorno": 0, "mensagem": "Produto movido para a exposição."}
 
 
@@ -601,19 +598,18 @@ class Estoque:
         G) RESTRIÇÕES:
         - A operação não é atômica no sentido de que, se um item falhar no meio do loop (o que não ocorre no código atual), os anteriores não seriam revertidos. O código atual retorna no primeiro erro, evitando este problema.
         """
-        for item, quantidade in venda.items():
-            codigo = item.codigo # código do Produto
-            if codigo not in self.capacidades:
+        for produto, quantidade in venda.items():
+            if produto not in self.capacidades:
                 return {"retorno": 1, "mensagem": "Produto não cadastrado."}
-            if self.exposicao[codigo] < quantidade:
+            if self.exposicao[produto] < quantidade:
                 return {"retorno": 2, "mensagem": "Quantidade insuficiente na exposição para venda."}
 
-            self.exposicao[codigo] -= quantidade
+            self.exposicao[produto] -= quantidade
         return {"retorno": 0, "mensagem": "Produtos removidos com sucesso."}
 
 
 
-    def produto_existe(self, codigo):
+    def produto_existe(self, produto):
         """
         ESPECIFICAÇÃO DE FUNÇÃO:
         A) NOME: produto_existe() (Método de Estoque)
@@ -648,7 +644,7 @@ class Estoque:
         G) RESTRIÇÕES:
         - Nenhuma.
         """
-        if codigo in self.capacidades:
+        if produto in self.capacidades:
             return {"retorno": 0, "mensagem": "Produto registrado."}
         return {"retorno": 1, "mensagem": "Produto não encontrado."}
 
@@ -691,18 +687,17 @@ class Estoque:
         G) RESTRIÇÕES:
         - Nenhuma.
         """
-        codigo = produto.codigo
-        if codigo not in self.capacidades:
+        if produto not in self.capacidades:
             return {"retorno": 1, "mensagem": "Produto não cadastrado."}
 
         return {
             "retorno": 0,
             "mensagem": "Consulta realizada com sucesso.",
             "dados": {
-                "estoque": self.estoque[codigo],
-                "exposicao": self.exposicao[codigo],
-                "capacidade_estoque": self.capacidades[codigo]["estoque"],
-                "capacidade_exposicao": self.capacidades[codigo]["exposicao"]
+                "estoque": self.estoque[produto],
+                "exposicao": self.exposicao[produto],
+                "capacidade_estoque": self.capacidades[produto]["estoque"],
+                "capacidade_exposicao": self.capacidades[produto]["exposicao"]
             }
         }
 
@@ -750,37 +745,37 @@ class Estoque:
         inconsistencias = []
 
         # Verifica produtos registrados
-        for codigo in self.capacidades:
+        for produto in self.capacidades:
             problemas = []
 
-            if codigo not in self.estoque:
+            if produto not in self.estoque:
                 problemas.append("Produto sem entrada no estoque interno")
-            if codigo not in self.exposicao:
+            if produto not in self.exposicao:
                 problemas.append("Produto sem entrada na exposição")
 
-            if codigo in self.estoque and codigo in self.capacidades:
-                qtd = self.estoque[codigo]
-                cap = self.capacidades[codigo]["estoque"]
+            if produto in self.estoque and produto in self.capacidades:
+                qtd = self.estoque[produto]
+                cap = self.capacidades[produto]["estoque"]
                 if qtd > cap:
                     problemas.append(f"Estoque excede capacidade ({qtd} > {cap})")
 
-            if codigo in self.exposicao and codigo in self.capacidades:
-                qtd = self.exposicao[codigo]
-                cap = self.capacidades[codigo]["exposicao"]
+            if produto in self.exposicao and produto in self.capacidades:
+                qtd = self.exposicao[produto]
+                cap = self.capacidades[produto]["exposicao"]
                 if qtd > cap:
                     problemas.append(f"Exposição excede capacidade ({qtd} > {cap})")
 
             if problemas:
                 inconsistencias.append({
-                    "codigo": codigo,
+                    "codigo": produto.codigo,
                     "problemas": problemas
                 })
 
         # Verifica produtos não registrados em capacidades
-        for codigo in set(self.estoque.keys()).union(self.exposicao.keys()):
-            if codigo not in self.capacidades:
+        for produto in set(self.estoque.keys()).union(self.exposicao.keys()):
+            if produto not in self.capacidades:
                 inconsistencias.append({
-                    "codigo": codigo,
+                    "codigo": produto.codigo,
                     "problemas": ["Produto presente no estoque ou exposição mas não registrado nas capacidades"]
                 })
 
