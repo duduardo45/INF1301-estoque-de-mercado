@@ -93,7 +93,7 @@ class Produto:
         codigo = json_dict["codigo"]
         peso = json_dict["peso"]
         preco = json_dict["preco"]
-        preco_por_peso = json_dict["preco_por_peso"]
+        preco_por_peso = json_dict.get("preco_por_peso", None)
         return cls(nome, marca, categoria, codigo, peso, preco, preco_por_peso)
 
 

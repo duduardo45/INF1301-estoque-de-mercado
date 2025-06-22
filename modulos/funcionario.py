@@ -85,7 +85,7 @@ class Funcionario:
             codigo=data["codigo"],
             cargo=data["cargo"],
             data_contratacao=data["data_contratacao"],
-            data_desligamento=data.get("data_desligamento")
+            data_desligamento=data.get("data_desligamento", None)
         )
 
     def atualizar(self, atributo: str, valor):

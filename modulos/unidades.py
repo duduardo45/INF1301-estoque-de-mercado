@@ -45,9 +45,6 @@ class Localidade:
 
     @classmethod
     def from_json(cls, data: dict):
-        from modulos.funcionario import Funcionario
-        from modulos.carrinho import Carrinho
-        from modulos.estoque import Estoque
 
         estoque = Estoque.from_json(data["estoque"])
         funcionarios = [Funcionario.from_json(f) for f in data["funcionarios"]]
