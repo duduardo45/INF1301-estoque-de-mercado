@@ -209,8 +209,25 @@ def gera_dados_teste():
     }
 
     # Salvar para visualização futura
-    for nome, conteudo in jsons.items():
-        with open(f"dados/{nome}.json", "w", encoding="utf-8") as f:
-            json.dump(conteudo, f, indent=4, ensure_ascii=False)
+    for nome, novos_dados in jsons.items():
+        caminho_arquivo = f"dados/{nome}.json"
+        
+        # 1. LER: Tenta carregar os dados existentes do arquivo.
+        try:
+            with open(caminho_arquivo, "r", encoding="utf-8") as f:
+                dados_existentes = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            # Se o arquivo não existe ou está vazio/corrompido, começa com um dicionário vazio.
+            dados_existentes = {}
 
-    jsons.keys()
+        # 2. ATUALIZAR: Adiciona os novos dados aos dados existentes.
+        # O método .update() mescla os dicionários.
+        dados_existentes.update(novos_dados)
+
+        # 3. ESCREVER: Salva o conteúdo completo e atualizado, sobrescrevendo o arquivo.
+        with open(caminho_arquivo, "w", encoding="utf-8") as f:
+            json.dump(dados_existentes, f, indent=4, ensure_ascii=False)
+        
+        print(f"Arquivo '{caminho_arquivo}' atualizado com sucesso.")
+    
+    return jsons.keys()
