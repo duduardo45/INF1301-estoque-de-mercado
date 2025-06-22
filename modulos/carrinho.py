@@ -1,10 +1,21 @@
+import json
 from datetime import date
 from .produto import Produto
 
 
 __all__ = [
     "Carrinho",
+    "cria_carrinho",
+    "consultar_carrinho_por_id",
+    "listar_todos_carrinhos",
+    "salvar_carrinhos",
+    "carregar_carrinhos"
 ]
+
+
+CARRINHOS_JSON = 'dados/carrinhos.json'
+
+_todos_carrinhos = {}
 
 
 class Carrinho:
@@ -372,10 +383,48 @@ class Carrinho:
         return {'retorno': 0, 'mensagem': 'Carrinho finalizado'}
     
 
-_todos_carrinhos: {}
 
-def consultar_carrinho_por_id():
-    pass
+def salvar_carrinhos():
+    json_carrinhos = {}
+
+    for id, c in _todos_carrinhos.items():
+        json_carrinhos[id] = c.to_json()
+
+    with open(CARRINHOS_JSON, "w", encoding="utf-8") as f:
+        json.dump(json_carrinhos, f, ensure_ascii=False, indent=4)
+
+def carregar_carrinhos():
+    try:
+        with open(CARRINHOS_JSON, "r", encoding="utf-8") as f:
+            json_carrinhos = json.load(f)
+    except FileNotFoundError:
+        return  # Arquivo ainda não existe, nada para carregar
+
+    for id, c_json in json_carrinhos.items():
+        _todos_carrinhos[id] = Carrinho.from_json(c_json)
+
+def criar_carrinho():
+    novo_id = len(_todos_carrinhos) + 1
+    from modulos.carrinho import Carrinho
+
+    carrinho = Carrinho(id=novo_id)
+    _todos_carrinhos[novo_id] = carrinho
+    return {"retorno": 0, "mensagem": "Carrinho criado com sucesso", "dados": carrinho}
+
+
+def consultar_carrinho_por_id(id: int):
+    if not isinstance(id, int):
+        return {"retorno": 2, "mensagem": "Parâmetro inválido: id deve ser um inteiro"}
+
+    carrinho = _todos_carrinhos.get(id)
+    if not carrinho:
+        return {"retorno": 1, "mensagem": "Carrinho não encontrado"}
+
+    return {"retorno": 0, "mensagem": "Carrinho encontrado", "dados": carrinho}
+
 
 def listar_todos_carrinhos():
-    pass
+    if not _todos_carrinhos:
+        return {"retorno": 1, "mensagem": "Nenhum carrinho registrado", "dados": []}
+
+    return {"retorno": 0, "mensagem": "Listagem realizada com sucesso", "dados": list(_todos_carrinhos.values())}

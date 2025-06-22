@@ -1,3 +1,7 @@
+import json
+
+PRODUTOS_JSON = 'dados/produtos.json'
+
 _todos_produtos = {}
 
 __all__ = [
@@ -7,7 +11,10 @@ __all__ = [
     "atualizar_produto",
     "pesquisar_produto",
     "listar_todos_produtos",
+    "salvar_produtos",
+    "carregar_produtos"
 ]
+
 
 
 
@@ -111,6 +118,27 @@ class Produto:
             preco_total = self.preco_por_peso * quantidade
 
         return {"retorno": 0, "mensagem": "Preço calculado com sucesso.", "dados": preco_total}
+
+
+
+def salvar_produtos():
+    json_produtos = {}
+
+    for codigo, p in _todos_produtos.items():
+        json_produtos[codigo] = p.to_json()
+
+    with open(PRODUTOS_JSON, "w", encoding="utf-8") as f:
+        json.dump(json_produtos, f, ensure_ascii=False, indent=4)
+
+def carregar_produtos():
+    try:
+        with open(PRODUTOS_JSON, "r", encoding="utf-8") as f:
+            json_produtos = json.load(f)
+    except FileNotFoundError:
+        return
+
+    for codigo, p_json in json_produtos.items():
+        _todos_produtos[codigo] = Produto.from_json(p_json)
 
 
 

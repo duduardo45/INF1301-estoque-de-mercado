@@ -1,15 +1,21 @@
+import json
 from datetime import date
 
 _todos_funcionarios = {}
+
+FUNCIONARIOS_JSON = 'dados/funcionarios.json'
 
 __all__ = [
     "Funcionario",
     "adiciona_funcionario",
     "novo_funcionario",
     "consultar_funcionario",
-    "consultar_funcionario_por_nome",
+    "consultar_funcionarios_por_nome",
     "listar_todos_funcionarios",
+    "salvar_funcionarios",
+    "carregar_funcionarios"
 ]
+
 
 class Funcionario:
     def __init__(self, nome, codigo, cargo, data_contratacao, data_desligamento=None):
@@ -135,6 +141,24 @@ class Funcionario:
         """
         return self.data_desligamento is None
 
+def salvar_funcionarios():
+    json_funcionarios = {}
+
+    for codigo, f in _todos_funcionarios.items():
+        json_funcionarios[str(codigo)] = f.to_json()
+
+    with open(FUNCIONARIOS_JSON, "w", encoding="utf-8") as f:
+        json.dump(json_funcionarios, f, ensure_ascii=False, indent=4)
+
+def carregar_funcionarios():
+    try:
+        with open(FUNCIONARIOS_JSON, "r", encoding="utf-8") as f:
+            json_funcionarios = json.load(f)
+    except FileNotFoundError:
+        return
+
+    for codigo, f_json in json_funcionarios.items():
+        _todos_funcionarios[int(codigo)] = Funcionario.from_json(f_json)
 
 
 def adiciona_funcionario(nome: str, codigo: int, cargo: str, data_contratacao: str):

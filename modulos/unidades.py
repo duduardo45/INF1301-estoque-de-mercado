@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime
 from .funcionario import Funcionario
 from .estoque import Estoque
@@ -5,12 +6,19 @@ from .carrinho import Carrinho
 
 
 __all__ = [
+    "Localidade",
     "adiciona_Unidade",
     "remove_Unidade",
     "consulta_Unidade",
     "listar_Unidades",
-    "relatorio_Unidade"
+    "atualiza_Unidade",
+    "relatorio_Unidade",
+    "salvar_unidades",
+    "carregar_unidades"
 ]
+
+
+UNIDADES_JSON = 'dados/unidades.json'
 
 _unidades = {}
 
@@ -61,6 +69,25 @@ class Localidade:
 
         setattr(self, atributo, valor)
         return {"retorno": 0, "mensagem": f"Atributo '{atributo}' atualizado com sucesso."}
+
+def salvar_unidades():
+    json_unidades = {}
+
+    for codigo, unidade in _unidades.items():
+        json_unidades[codigo] = unidade.to_json()
+
+    with open(UNIDADES_JSON, "w", encoding="utf-8") as f:
+        json.dump(json_unidades, f, ensure_ascii=False, indent=4)
+
+def carregar_unidades():
+    try:
+        with open(UNIDADES_JSON, "r", encoding="utf-8") as f:
+            json_unidades = json.load(f)
+    except FileNotFoundError:
+        return
+
+    for codigo, unidade_json in json_unidades.items():
+        _unidades[int(codigo)] = Localidade.from_json(unidade_json)
 
 
 def adiciona_Unidade(codigo:int, nome:str, localizacao:tuple[float,float], estoque:Estoque=None, funcionarios:list[Funcionario]=None, vendas: list[Carrinho]=None):

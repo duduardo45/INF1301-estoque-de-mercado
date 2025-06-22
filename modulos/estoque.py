@@ -1,7 +1,16 @@
+import json
+
+ESTOQUES_JSON = 'dados/estoques.json'
+
+_todos_estoques = {}
+
+
 __all__ = [
     "Estoque",
     "registrar_estoque",
     "listar_todos_estoques",
+    "salvar_estoques",
+    "carregar_estoques"
 ]
 
 
@@ -829,8 +838,25 @@ class Estoque:
         }
 
 
+def salvar_estoques():
+    json_estoques = {}
 
-_todos_estoques = {}
+    for codigo, estoque in _todos_estoques.items():
+        json_estoques[codigo] = estoque.to_json()
+
+    with open(ESTOQUES_JSON, "w", encoding="utf-8") as f:
+        json.dump(json_estoques, f, ensure_ascii=False, indent=4)
+
+def carregar_estoques():
+    try:
+        with open(ESTOQUES_JSON, "r", encoding="utf-8") as f:
+            json_estoques = json.load(f)
+    except FileNotFoundError:
+        return
+
+    for codigo, estoque_json in json_estoques.items():
+        _todos_estoques[codigo] = Estoque.from_json(estoque_json)
+
 
 def registrar_estoque(codigo: str):
     """
@@ -854,7 +880,7 @@ def registrar_estoque(codigo: str):
     {"retorno": 1, "mensagem": "Estoque já registrado com este código"}
 
     RETORNO 4: DICIONÁRIO DE SUCESSO:
-    {"retorno": 0, "mensagem": "Estoque registrado com sucesso"}
+    {"retorno": 0, "mensagem": "Estoque registrado com sucesso", dados: <objeto Estoque>}
 
     D) CONDIÇÕES DE ACOPLAMENTO:
     Assertiva(s) de entrada:
@@ -889,8 +915,9 @@ def registrar_estoque(codigo: str):
     if codigo in _todos_estoques:
         return {"retorno": 1, "mensagem": "Estoque já registrado com este código"}
 
-    _todos_estoques[codigo] = Estoque(codigo=codigo)
-    return {"retorno": 0, "mensagem": "Estoque registrado com sucesso"}
+    estoque = Estoque(codigo=codigo)
+    _todos_estoques[codigo] = estoque
+    return {"retorno": 0, "mensagem": "Estoque registrado com sucesso", "dados": estoque}
 
 def listar_todos_estoques():
     """
